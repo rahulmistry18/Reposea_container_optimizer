@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ContainerOPS — Setup Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Barlow+Condensed:wght@400;500;600;700;800&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F7F6F2;
+  --bg1:#FFFFFF;
+  --bg2:#F0EEE8;
+  --bg3:#E8E5DC;
+  --ink:#0F0E0B;
+  --ink2:#3D3B35;
+  --ink3:#7A786E;
+  --amber:#D97706;
+  --amber-bg:#FEF3C7;
+  --amber-light:#FFFBEB;
+  --red:#DC2626;
+  --red-bg:#FEF2F2;
+  --green:#15803D;
+  --green-bg:#F0FDF4;
+  --blue:#1D4ED8;
+  --blue-bg:#EFF6FF;
+  --border:#D4D0C4;
+  --border2:#E8E5DC;
+  --mono:'JetBrains Mono',monospace;
+  --display:'Barlow Condensed',sans-serif;
+  --body:'Barlow',sans-serif;
+  --done-bg:#F0FDF4;
+  --done-border:#BBF7D0;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:14px;line-height:1.6}
+
+/* ── HEADER ── */
+.top-bar{
+  background:var(--ink);
+  padding:16px 32px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100;
+}
+.logo{font-family:var(--display);font-size:20px;font-weight:800;color:#fff;letter-spacing:.04em}
+.logo span{color:var(--amber)}
+.progress-wrap{display:flex;align-items:center;gap:12px}
+.progress-label{font-family:var(--mono);font-size:10px;color:#6B7280;letter-spacing:.08em}
+.progress-bar{width:180px;height:4px;background:#374151;border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;background:var(--amber);border-radius:2px;transition:width .4s ease}
+.progress-pct{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--amber)}
+
+/* ── LAYOUT ── */
+.outer{display:grid;grid-template-columns:260px 1fr;min-height:calc(100vh - 56px)}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  background:var(--bg1);
+  border-right:1px solid var(--border);
+  padding:24px 0;
+  position:sticky;
+  top:56px;
+  height:calc(100vh - 56px);
+  overflow-y:auto;
+}
+.sidebar-section{
+  padding:8px 20px 4px;
+  font-family:var(--mono);
+  font-size:9px;
+  font-weight:700;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--ink3);
+  margin-top:12px;
+}
+.sidebar-section:first-child{margin-top:0}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 20px;
+  cursor:pointer;
+  transition:background .1s;
+  border-left:2px solid transparent;
+  text-decoration:none;
+}
+.nav-item:hover{background:var(--bg2)}
+.nav-item.active{background:var(--amber-bg);border-left-color:var(--amber)}
+.nav-item.done{opacity:.6}
+.nav-num{
+  width:22px;height:22px;
+  border-radius:50%;
+  background:var(--bg3);
+  border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:9px;font-weight:700;
+  color:var(--ink3);flex-shrink:0;
+  transition:all .2s;
+}
+.nav-item.active .nav-num{background:var(--amber);border-color:var(--amber);color:#fff}
+.nav-item.done .nav-num{background:var(--green);border-color:var(--green);color:#fff}
+.nav-item.done .nav-num::before{content:'✓'}
+.nav-text{font-family:var(--display);font-size:13px;font-weight:600;color:var(--ink2)}
+.nav-item.active .nav-text{color:var(--amber)}
+.nav-tag{
+  margin-left:auto;
+  font-family:var(--mono);font-size:8px;
+  background:var(--bg3);border-radius:3px;
+  padding:1px 5px;color:var(--ink3);white-space:nowrap;
+}
+.nav-item.done .nav-tag{background:var(--done-bg);color:var(--green)}
+
+/* ── CONTENT ── */
+.content{padding:40px 48px;max-width:860px}
+
+.phase-header{
+  display:flex;align-items:center;gap:16px;
+  margin-bottom:32px;
+  padding-bottom:20px;
+  border-bottom:2px solid var(--border2);
+}
+.phase-icon{
+  width:48px;height:48px;
+  background:var(--ink);
+  border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;flex-shrink:0;
+}
+.phase-info{}
+.phase-title{font-family:var(--display);font-size:28px;font-weight:800;color:var(--ink);line-height:1}
+.phase-sub{font-size:13px;color:var(--ink3);margin-top:3px}
+.phase-time{
+  margin-left:auto;
+  background:var(--amber-bg);
+  border:1px solid #FDE68A;
+  border-radius:6px;
+  padding:6px 14px;
+  font-family:var(--mono);
+  font-size:11px;
+  color:var(--amber);
+  font-weight:700;
+  white-space:nowrap;
+}
+
+/* ── STEP CARD ── */
+.step{
+  background:var(--bg1);
+  border:1px solid var(--border);
+  border-radius:10px;
+  margin-bottom:20px;
+  overflow:hidden;
+  transition:border-color .2s,box-shadow .2s;
+}
+.step.done-step{
+  background:var(--done-bg);
+  border-color:var(--done-border);
+}
+.step-head{
+  display:flex;align-items:center;gap:14px;
+  padding:16px 20px;
+  cursor:pointer;
+  user-select:none;
+}
+.step-num{
+  width:32px;height:32px;
+  border-radius:50%;
+  background:var(--bg3);
+  border:1.5px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:11px;font-weight:700;
+  color:var(--ink3);flex-shrink:0;
+}
+.step.done-step .step-num{background:var(--green);border-color:var(--green);color:#fff}
+.step-title{font-family:var(--display);font-size:17px;font-weight:700;color:var(--ink);flex:1}
+.step.done-step .step-title{color:var(--green)}
+.step-badge{
+  font-family:var(--mono);font-size:9px;
+  background:var(--bg3);border-radius:4px;
+  padding:2px 8px;color:var(--ink3);
+}
+.step-chevron{
+  font-size:12px;color:var(--ink3);
+  transition:transform .2s;
+}
+.step.open .step-chevron{transform:rotate(180deg)}
+.step-body{
+  display:none;
+  padding:0 20px 20px;
+  border-top:1px solid var(--border2);
+}
+.step.open .step-body{display:block}
+.step.done-step .step-body{border-top-color:var(--done-border)}
+
+/* ── INSTRUCTION ITEMS ── */
+.instr{
+  display:flex;gap:14px;
+  padding:12px 0;
+  border-bottom:1px solid var(--border2);
+}
+.instr:last-child{border-bottom:none}
+.instr-num{
+  width:24px;height:24px;
+  border-radius:50%;
+  background:var(--ink);
+  color:#fff;
+  font-family:var(--mono);font-size:10px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;margin-top:1px;
+}
+.instr-body{}
+.instr-text{font-size:14px;color:var(--ink2);line-height:1.6;margin-bottom:6px}
+.instr-text strong{color:var(--ink);font-weight:600}
+
+/* ── UI MOCKUP ── */
+.ui-mock{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:7px;
+  padding:12px 16px;
+  margin:8px 0;
+  font-family:var(--mono);font-size:11px;
+  color:var(--ink2);
+}
+.ui-mock .ui-path{
+  color:var(--ink3);font-size:10px;
+  margin-bottom:8px;
+  display:flex;align-items:center;gap:4px;
+}
+.ui-mock .ui-path span{color:var(--border)}
+.ui-row{
+  display:flex;align-items:center;gap:10px;
+  padding:7px 10px;
+  background:var(--bg1);
+  border:1px solid var(--border);
+  border-radius:5px;
+  margin-bottom:5px;
+}
+.ui-row:last-child{margin-bottom:0}
+.ui-row.highlight{
+  background:var(--amber-bg);
+  border-color:#FDE68A;
+}
+.ui-row.selected{
+  background:var(--blue-bg);
+  border-color:#BFDBFE;
+}
+.ui-label{flex:1;font-size:11px}
+.ui-ctrl{
+  font-size:10px;
+  background:var(--ink);color:#fff;
+  border-radius:3px;padding:2px 8px;cursor:pointer;
+}
+.ui-ctrl.green-btn{background:var(--green)}
+.ui-ctrl.blue-btn{background:var(--blue)}
+.radio{
+  width:14px;height:14px;
+  border-radius:50%;
+  border:1.5px solid var(--border);
+  background:var(--bg1);
+  display:flex;align-items:center;justify-content:center;
+}
+.radio.on{border-color:var(--blue);background:var(--blue)}
+.radio.on::after{content:'';width:5px;height:5px;border-radius:50%;background:#fff}
+
+/* ── CODE BLOCK ── */
+.code{
+  background:#1E2433;
+  border-radius:7px;
+  padding:14px 16px;
+  margin:8px 0;
+  font-family:var(--mono);font-size:12px;
+  color:#E2E8F0;
+  overflow-x:auto;
+  position:relative;
+}
+.code .cp{color:#6B7280;font-size:9px;letter-spacing:.06em;margin-bottom:8px}
+.code .cmd{color:#FCD34D}
+.code .cmt{color:#4B5563;font-style:italic}
+.code .url{color:#60A5FA;text-decoration:underline}
+.copy-btn{
+  position:absolute;top:10px;right:10px;
+  background:rgba(255,255,255,.1);
+  border:none;border-radius:4px;
+  padding:3px 8px;
+  font-family:var(--mono);font-size:9px;color:#9CA3AF;
+  cursor:pointer;transition:background .15s;
+}
+.copy-btn:hover{background:rgba(255,255,255,.2);color:#fff}
+
+/* ── CALLOUT ── */
+.callout{
+  display:flex;gap:12px;
+  border-radius:7px;
+  padding:12px 14px;
+  margin:10px 0;
+  font-size:13px;
+  line-height:1.55;
+}
+.callout.info{background:var(--blue-bg);border:1px solid #BFDBFE;color:#1E3A5F}
+.callout.warn{background:var(--amber-bg);border:1px solid #FDE68A;color:#78350F}
+.callout.good{background:var(--green-bg);border:1px solid #BBF7D0;color:#14532D}
+.callout-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+
+/* ── CHECK BUTTON ── */
+.check-btn{
+  display:flex;align-items:center;gap:8px;
+  margin-top:16px;
+  padding:9px 16px;
+  background:var(--ink);
+  border:none;border-radius:6px;
+  font-family:var(--display);font-size:13px;font-weight:700;
+  color:#fff;letter-spacing:.04em;cursor:pointer;
+  transition:background .15s,transform .1s;
+}
+.check-btn:hover{background:#374151}
+.check-btn:active{transform:scale(.98)}
+.check-btn.done-btn{background:var(--green)}
+
+/* ── PHASE NAV ── */
+.phase-nav{
+  display:flex;gap:10px;
+  margin-top:32px;
+  padding-top:20px;
+  border-top:1px solid var(--border);
+}
+.phase-btn{
+  padding:10px 20px;
+  border-radius:6px;
+  font-family:var(--display);font-size:14px;font-weight:700;
+  letter-spacing:.04em;cursor:pointer;border:none;
+  transition:all .15s;
+}
+.phase-btn.prev{background:var(--bg2);color:var(--ink2);border:1px solid var(--border)}
+.phase-btn.prev:hover{background:var(--bg3)}
+.phase-btn.next{background:var(--ink);color:#fff}
+.phase-btn.next:hover{background:#374151}
+.phase-btn.next.final{background:var(--green)}
+
+/* ── COMPLETE SCREEN ── */
+.complete-screen{
+  text-align:center;
+  padding:60px 40px;
+}
+.complete-icon{font-size:64px;margin-bottom:20px}
+.complete-title{
+  font-family:var(--display);font-size:40px;font-weight:800;
+  color:var(--ink);margin-bottom:10px;
+}
+.complete-sub{font-size:15px;color:var(--ink3);margin-bottom:32px;max-width:520px;margin-inline:auto}
+.complete-links{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.cl-link{
+  display:flex;align-items:center;gap:8px;
+  padding:12px 20px;border-radius:7px;
+  font-family:var(--display);font-size:14px;font-weight:700;
+  text-decoration:none;letter-spacing:.04em;
+  transition:transform .15s;
+}
+.cl-link:hover{transform:translateY(-2px)}
+.cl-link.github{background:var(--ink);color:#fff}
+.cl-link.pages{background:var(--blue);color:#fff}
+.cl-link.excel{background:#217346;color:#fff}
+.cl-link.pbi{background:#F2C811;color:#000}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <div class="logo">CONTAINER<span>OPS</span> — Setup Guide</div>
+  <div class="progress-wrap">
+    <div class="progress-label">PROGRESS</div>
+    <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+    <div class="progress-pct" id="prog-pct">0%</div>
+  </div>
+</div>
+
+<div class="outer">
+
+<!-- SIDEBAR -->
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-section">Phase 1 — GitHub</div>
+  <a class="nav-item active" data-phase="0" data-step="0" onclick="goToStep(0)">
+    <div class="nav-num">1</div>
+    <div class="nav-text">Create Repository</div>
+    <div class="nav-tag">~2 min</div>
+  </a>
+  <a class="nav-item" data-phase="0" data-step="1" onclick="goToStep(1)">
+    <div class="nav-num">2</div>
+    <div class="nav-text">Upload Project Files</div>
+    <div class="nav-tag">~3 min</div>
+  </a>
+  <a class="nav-item" data-phase="0" data-step="2" onclick="goToStep(2)">
+    <div class="nav-num">3</div>
+    <div class="nav-text">Workflow Permissions</div>
+    <div class="nav-tag">~1 min</div>
+  </a>
+  <a class="nav-item" data-phase="0" data-step="3" onclick="goToStep(3)">
+    <div class="nav-num">4</div>
+    <div class="nav-text">Enable GitHub Pages</div>
+    <div class="nav-tag">~1 min</div>
+  </a>
+  <a class="nav-item" data-phase="0" data-step="4" onclick="goToStep(4)">
+    <div class="nav-num">5</div>
+    <div class="nav-text">Trigger First Pipeline</div>
+    <div class="nav-tag">~2 min</div>
+  </a>
+  <div class="sidebar-section">Phase 2 — Power BI</div>
+  <a class="nav-item" data-phase="1" data-step="5" onclick="goToStep(5)">
+    <div class="nav-num">6</div>
+    <div class="nav-text">Install Power BI</div>
+    <div class="nav-tag">~3 min</div>
+  </a>
+  <a class="nav-item" data-phase="1" data-step="6" onclick="goToStep(6)">
+    <div class="nav-num">7</div>
+    <div class="nav-text">Connect to Excel Data</div>
+    <div class="nav-tag">~3 min</div>
+  </a>
+  <a class="nav-item" data-phase="1" data-step="7" onclick="goToStep(7)">
+    <div class="nav-num">8</div>
+    <div class="nav-text">Build Visuals</div>
+    <div class="nav-tag">~5 min</div>
+  </a>
+  <a class="nav-item" data-phase="1" data-step="8" onclick="goToStep(8)">
+    <div class="nav-num">9</div>
+    <div class="nav-text">Export PDF / Excel</div>
+    <div class="nav-tag">~1 min</div>
+  </a>
+  <div class="sidebar-section">Phase 3 — Fork Setup</div>
+  <a class="nav-item" data-phase="2" data-step="9" onclick="goToStep(9)">
+    <div class="nav-num">10</div>
+    <div class="nav-text">Share with Others</div>
+    <div class="nav-tag">~1 min</div>
+  </a>
+</nav>
+
+<!-- MAIN CONTENT -->
+<div class="content" id="content"></div>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// STEP DATA
+// ═══════════════════════════════════════════════════════════
+
+const STEPS = [
+
+// ── STEP 0 ──────────────────────────────────────────────────
+{
+  phase: "Phase 1 — GitHub Setup",
+  phaseIcon: "🐙",
+  phaseSub: "Get the pipeline running on GitHub in under 10 minutes.",
+  phaseTime: "~10 min total",
+  title: "Create Your GitHub Repository",
+  badge: "Step 1 of 10",
+  content: `
+    <div class="callout info"><div class="callout-icon">ℹ️</div><div>You need a free GitHub account. Go to <strong>github.com</strong> and sign up if you don't have one yet.</div></div>
+
+    <div class="instr">
+      <div class="instr-num">1</div>
+      <div class="instr-body">
+        <div class="instr-text">Go to <strong>github.com</strong> and click the <strong>+</strong> icon in the top-right corner, then select <strong>"New repository"</strong>.</div>
+        <div class="ui-mock">
+          <div class="ui-path">github.com <span>›</span> top-right corner</div>
+          <div class="ui-row highlight"><div class="ui-label">＋ New repository</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="instr">
+      <div class="instr-num">2</div>
+      <div class="instr-body">
+        <div class="instr-text">Fill in the repository name. Use exactly this name (or any name you prefer):</div>
+        <div class="code"><button class="copy-btn" onclick="copyCode(this)">copy</button><div class="cp">REPOSITORY NAME</div><span class="cmd">container-optimizer</span></div>
+      </div>
+    </div>
+
+    <div class="instr">
+      <div class="instr-num">3</div>
+      <div class="instr-body">
+        <div class="instr-text">Set visibility to <strong>Public</strong>. (Required for free GitHub Pages hosting. Private repos need a paid plan.)</div>
+        <div class="ui-mock">
+          <div class="ui-row selected"><div class="radio on"></div><div class="ui-label"><strong>Public</strong> — Anyone can see this repository</div></div>
+          <div class="ui-row"><div class="radio"></div><div class="ui-label">Private — You choose who can see this</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="instr">
+      <div class="instr-num">4</div>
+      <div class="instr-body">
+        <div class="instr-text">Leave everything else as default. Scroll down and click <strong>"Create repository"</strong>.</div>
+        <div class="callout good"><div class="callout-icon">✅</div><div>Your empty repository is now created at <code>github.com/YOUR_USERNAME/container-optimizer</code></div></div>
+      </div>
+    </div>
+  `
+},
+
+// ── STEP 1 ──────────────────────────────────────────────────
+{
+  title: "Upload Your Project Files",
+  badge: "Step 2 of 10",
+  content: `
+    <div class="callout warn"><div class="callout-icon">📦</div><div>Make sure you have downloaded the <strong>container-optimizer-v2.zip</strong> file from the previous chat message and unzipped it on your computer.</div></div>
+
+    <div class="instr">
+      <div class="instr-num">1</div>
+      <div class="instr-body">
+        <div class="instr-text">Open a terminal (Command Prompt on Windows, Terminal on Mac) and navigate to the unzipped folder:</div>
+        <div class="code"><button class="copy-btn" onclick="copyCode(this)">copy</button><div class="cp">TERMINAL — navigate to project</div><span class="cmd">cd container-optimizer-v2</span></div>
+      </div>
+    </div>
+
+    <div class="instr">
+      <div class="instr-num">2</div>
+      <div class="instr-body">
+        <div class="instr-text">Initialize git and connect to your GitHub repo. Replace <strong>YOUR_USERNAME</strong> with your actual GitHub username:</div>
+        <div class="code"><button class="copy-btn" onclick="copyCode(this)">copy</button><div class="cp">TERMINAL — initialize and push</div><span class="cmd">git init
+git add .
+git commit -m "init: container optimizer pipeline"
+git branch -M main
+git remote add origin https://github.com/YOUR_USERNAME/container-optimizer.git
+git push -u origin main</span></div>
+      </div>
+    </div>
+
+    <div class="instr">
+      <div class="instr-num">3</div>
+      <div class="instr-body">
+        <div class="instr-text">Go back to your browser and refresh <strong>github.com/YOUR_USERNAME/container-optimizer</strong>. You should now see all the files listed.</div>
+        <div class="callout good"><div class="callout-icon">✅</div><div>If you see folders like <code>pipeline/</code>, <code>dashboard/</code>, <code>.github/</code> — the upload worked correctly.</div></div>
+      </div>
+    </div>
+
+    <div class="callout info"><div class="callout-icon">💡</div><div><strong>No terminal?</strong> GitHub also has a drag-and-drop upload. Click <strong>Add file → Upload files</strong> on the repo page and drag all the unzipped files in.</div></div>
+  `
+},
+
+// ── STEP 2 ──────────────────────────────────────────────────
+{
+  title: "Set Workflow Permissions",
+  badge: "Step 3 of 10",
+  content: `
+    <div class="callout warn"><div class="callout-icon">⚠️</div><div>By default, GitHub Actions can't write back to your repo. You must enable this or the pipeline can't commit the hourly Gold data.</div></div>
+
+    <div class="instr">
+      <div class="instr-num">1</div>
+      <div class="instr-body">
+        <div class="instr-text">In your repo, click the <strong>Settings</strong> tab (the gear icon at the top of your repo page).</div>
+        <div class="ui-mock">
+          <div class="ui-path">github.com/YOUR_USERNAME/container-optimizer</div>
+          <div class="ui-row"><div class="ui-label">Code</div></div>
+          <div class="ui-row"><div class="ui-label">Issues</div></div>
+          <div class="ui-row highlight"><div class="ui-label">⚙️ <strong>Settings</strong></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="instr">
+      <div class="instr-num">2</div>
+      <div class="instr-body">
+        <div class="instr-text">In the left sidebar, scroll down to <strong>Actions → General</strong>.</div>
+        <div class="ui-mock">
+          <div class="ui-path">Settings <span>›</span> Actions <span>›</span> General</div>
+          <div class="ui-row"><div class="ui-label">Actions permissions</div></div>
+          <div class="ui-row highlight"><div class="ui-label"><strong>Workflow permissions</strong></div><div class="ui-ctrl blue-btn">→ here</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="instr">
+      <div class="instr-num">3</div>
+      <div class="instr-body">
+        <div class="instr-text">Under "Workflow permissions", select <strong>"Read and write permissions"</strong>.</div>
+        <div class="ui-mock">
+          <div class="ui-row"><div class="radio"></div><div class="ui-label">Read repository contents and packages permissions</div></div>
+          <div class="ui-row selected"><div class="radio on"></div><div class="ui-label"><strong>Read and write permissions</strong> ← select this</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="instr">
+      <div class="instr-num">4</div>
+      <div class="instr-body">
+        <div class="instr-text">Click <strong>Save</strong> at the bottom of that section.</div>
+        <div class="callout good"><div class="callout-icon">✅</div><div>The pipeline can now commit the Gold data and Excel file back to your repo every hour.</div></div>
+      </div>
+    </div>
+  `
+},
+
+// ── STEP 3 ──────────────────────────────────────────────────
+{
+  title: "Enable GitHub Pages",
+  badge: "Step 4 of 10",
+  content: `
+    <div class="callout info"><div class="callout-icon">🌐</div><div>GitHub Pages turns your repo into a public website — completely free. This is where the live dashboard will be hosted.</div></div>
+
+    <div class="instr">
+      <div class="instr-num">1</div>
+      <div class="instr-body">
+        <div class="instr-text">Still in <strong>Settings</strong>, scroll down the left sidebar to find <strong>"Pages"</strong>.</div>
+        <div class="ui-mock">
+          <div class="ui-path">Settings <span>›</span> left sidebar</div>
+          <div class="ui-row"><div class="ui-label">Secrets and variables</div></div>
+          <div class="ui-row highlight"><div class="ui-label">📄 <strong>Pages</strong></div><div class="ui-ctrl blue-btn">→ here</div></div>
+          <div class="ui-row"><div class="ui-label">Environments</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="instr">
+      <div class="instr-num">2</div>
+      <div class="instr-body">
+        <div class="instr-text">Under <strong>"Build and deployment"</strong>, find the Source dropdown. Change it from "Deploy from a branch" to <strong>"GitHub Actions"</strong>.</div>
+        <div class="ui-mock">
+          <div class="ui-path">Settings <span>›</span> Pages <span>›</span> Build and deployment</div>
+          <div class="ui-row"><div class="ui-label">Source</div></div>
+          <div class="ui-row highlight"><div class="ui-label"><strong>GitHub Actions</strong> ← select this</div><div class="ui-ctrl">▼</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="instr">
+      <div class="instr-num">3</div>
+      <div class="instr-body">
+        <div class="instr-text">That's all for Pages. Your dashboard URL will be:</div>
+        <div class="code"><div class="cp">YOUR LIVE DASHBOARD URL</div><span class="url">https://YOUR_USERNAME.github.io/container-optimizer/</span></div>
+        <div class="callout good"><div class="callout-icon">✅</div><div>The URL goes live after the first pipeline run completes (next step).</div></div>
+      </div>
+    </div>
+  `
+},
+
+// ── STEP 4 ──────────────────────────────────────────────────
+{
+  title: "Trigger the First Pipeline Run",
+  badge: "Step 5 of 10",
+  content: `
+    <div class="callout info"><div class="callout-icon">⚡</div><div>The hourly cron won't fire until the next top-of-the-hour. We trigger it manually right now to get everything running immediately.</div></div>
+
+    <div class="instr">
+      <div class="instr-num">1</div>
+      <div class="instr-body">
+        <div class="instr-text">Click the <strong>Actions</strong> tab at the top of your repo page.</div>
+        <div class="ui-mock">
+          <div class="ui-path">github.com/YOUR_USERNAME/container-optimizer</div>
+          <div class="ui-row"><div class="ui-label">Code</div></div>
+          <div class="ui-row highlight"><div class="ui-label">▶ <strong>Actions</strong></div><div class="ui-ctrl blue-btn">→ here</div></div>
+          <div class="ui-row"><div class="ui-label">Pull requests</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="instr">
+      <div class="instr-num">2</div>
+      <div class="instr-body">
+        <div class="instr-text">In the left sidebar of the Actions page, click <strong>"🍴 Fork Setup — First-Time Configuration"</strong>.</div>
+      </div>
+    </div>
+
+    <div class="instr">
+      <div class="instr-num">3</div>
+      <div class="instr-body">
+        <div class="instr-text">Click the <strong>"Run workflow"</strong> dropdown button on the right, then click the green <strong>"Run workflow"</strong> button.</div>
+        <div class="ui-mock">
+          <div class="ui-path">Actions <span>›</span> Fork Setup</div>
+          <div class="ui-row highlight"><div class="ui-label">Run workflow</div><div class="ui-ctrl green-btn">▶ Run workflow</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="instr">
+      <div class="instr-num">4</div>
+      <div class="instr-body">
+        <div class="instr-text">A yellow circle appears — the pipeline is running. Wait about <strong>60–90 seconds</strong> for it to turn green ✅.</div>
+        <div class="callout good"><div class="callout-icon">✅</div><div>Once green: your Gold data is committed, your Excel file is generated, and your dashboard is live at your GitHub Pages URL!</div></div>
+      </div>
+    </div>
+
+    <div class="instr">
+      <div class="instr-num">5</div>
+      <div class="instr-body">
+        <div class="instr-text">Verify everything worked. Visit these URLs (replace YOUR_USERNAME):</div>
+        <div class="code"><div class="cp">CHECK THESE URLS</div><span class="url">https://YOUR_USERNAME.github.io/container-optimizer/</span>        <span class="cmt">← Live dashboard</span>
+<span class="url">https://github.com/YOUR_USERNAME/container-optimizer/tree/main/data/gold</span>   <span class="cmt">← Gold JSON files</span>
+<span class="url">https://github.com/YOUR_USERNAME/container-optimizer/tree/main/data/exports</span> <span class="cmt">← Excel file</span></div>
+        <div class="callout info"><div class="callout-icon">⏱️</div><div>GitHub Pages takes 1–2 minutes to deploy after the pipeline commits. If the dashboard shows "loading", wait 2 minutes and refresh.</div></div>
+      </div>
+    </div>
+  `
+},
+
+// ── STEP 5 ──────────────────────────────────────────────────
+{
+  phase: "Phase 2 — Power BI Setup",
+  phaseIcon: "📊",
+  phaseSub: "Connect Power BI to the live Excel data. Build and export your reports.",
+  phaseTime: "~12 min total",
+  title: "Install Power BI Desktop",
+  badge: "Step 6 of 10",
+  content: `
+    <div class="callout info"><div class="callout-icon">ℹ️</div><div>Power BI Desktop is <strong>completely free</strong> for individual use. You only need a paid plan if you want to publish to the Power BI Service / web.</div></div>
+
+    <div class="instr">
+      <div class="instr-num">1</div>
+      <div class="instr-body">
+        <div class="instr-text">Go to the official Microsoft download page:</div>
+        <div class="code"><div class="cp">DOWNLOAD URL</div><span class="url">https://powerbi.microsoft.com/en-us/desktop/</span></div>
+      </div>
+    </div>
+
+    <div class="instr">
+      <div class="instr-num">2</div>
+      <div class="instr-body">
+        <div class="instr-text">Click <strong>"Download free"</strong>. The installer is about 450 MB. Alternatively, find it in the <strong>Microsoft Store</strong> by searching "Power BI Desktop".</div>
+      </div>
+    </div>
+
+    <div class="instr">
+      <div class="instr-num">3</div>
+      <div class="instr-body">
+        <div class="instr-text">Run the installer and follow the default prompts. No special settings needed.</div>
+        <div class="callout warn"><div class="callout-icon">💡</div><div>Power BI Desktop runs on <strong>Windows only</strong>. If you're on Mac, use <strong>Power BI on the web</strong> at app.powerbi.com (free account required) or use Tableau Public instead.</div></div>
+      </div>
+    </div>
+
+    <div class="instr">
+      <div class="instr-num">4</div>
+      <div class="instr-body">
+        <div class="instr-text">Open Power BI Desktop. You may be asked to sign in — use a Microsoft/work account. You can also skip sign-in for local use.</div>
+        <div class="callout good"><div class="callout-icon">✅</div><div>Power BI Desktop is installed. Move to the next step to connect your data.</div></div>
+      </div>
+    </div>
+  `
+},
+
+// ── STEP 6 ──────────────────────────────────────────────────
+{
+  title: "Connect Power BI to the Excel Data",
+  badge: "Step 7 of 10",
+  content: `
+    <div class="callout info"><div class="callout-icon">📗</div><div>We connect directly to the Excel file on GitHub. Power BI can refresh from this URL automatically — no manual downloading ever.</div></div>
+
+    <div class="instr">
+      <div class="instr-num">1</div>
+      <div class="instr-body">
+        <div class="instr-text">In Power BI Desktop, click <strong>Home → Get Data → Web</strong>.</div>
+        <div class="ui-mock">
+          <div class="ui-path">Power BI Desktop <span>›</span> Home ribbon</div>
+          <div class="ui-row"><div class="ui-label">New report</div></div>
+          <div class="ui-row"><div class="ui-label">Get data ▼</div></div>
+          <div class="ui-row highlight"><div class="ui-label"><strong>Web</strong> — Connect to a web URL</div><div class="ui-ctrl blue-btn">→ here</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="instr">
+      <div class="instr-num">2</div>
+      <div class="instr-body">
+        <div class="instr-text">In the URL dialog, paste the raw GitHub URL for your Excel file. Replace <strong>YOUR_USERNAME</strong>:</div>
+        <div class="code"><button class="copy-btn" onclick="copyCode(this)">copy</button><div class="cp">PASTE THIS URL INTO POWER BI</div><span class="url">https://raw.githubusercontent.com/YOUR_USERNAME/container-optimizer/main/data/exports/container_report.xlsx</span></div>
+        <div class="callout warn"><div class="callout-icon">⚠️</div><div>Use the <strong>raw.githubusercontent.com</strong> URL, NOT the regular github.com URL. The raw URL returns the actual file bytes.</div></div>
+      </div>
+    </div>
+
+    <div class="instr">
+      <div class="instr-num">3</div>
+      <div class="instr-body">
+        <div class="instr-text">Click <strong>OK</strong>. Power BI will load the file. In the Navigator window, you'll see the 7 sheets. Select <strong>"Containers"</strong> (this is the full Gold table).</div>
+        <div class="ui-mock">
+          <div class="ui-path">Navigator <span>›</span> container_report.xlsx</div>
+          <div class="ui-row"><div class="ui-label">📊 Dashboard</div></div>
+          <div class="ui-row selected"><div class="ui-label"><strong>📦 Containers</strong> ← select this</div></div>
+          <div class="ui-row"><div class="ui-label">🔴 Critical</div></div>
+          <div class="ui-row"><div class="ui-label">🟡 Warning</div></div>
+          <div class="ui-row"><div class="ui-label">🛣️ By Trade Lane</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="instr">
+      <div class="instr-num">4</div>
+      <div class="instr-body">
+        <div class="instr-text">Click <strong>Load</strong> (not Transform Data — the data is already clean). Power BI loads all columns from the Gold schema.</div>
+        <div class="callout good"><div class="callout-icon">✅</div><div>You now have a live connection to the pipeline data. Every time you click Refresh, Power BI fetches the latest Gold output.</div></div>
+      </div>
+    </div>
+  `
+},
+
+// ── STEP 7 ──────────────────────────────────────────────────
+{
+  title: "Build Your Visuals in Power BI",
+  badge: "Step 8 of 10",
+  content: `
+    <div class="callout info"><div class="callout-icon">🎨</div><div>Here are the exact visuals to build. Each one maps to a column from the Gold schema. This takes about 5 minutes.</div></div>
+
+    <div class="instr">
+      <div class="instr-num">1</div>
+      <div class="instr-body">
+        <div class="instr-text"><strong>Card Visuals — KPIs (top row)</strong><br>Add 3 <strong>Card</strong> visuals from the Visualizations panel. Drag these fields into each:</div>
+        <div class="ui-mock">
+          <div class="ui-path">Visualization: Card</div>
+          <div class="ui-row highlight"><div class="ui-label">Card 1 → drag <strong>container_id</strong> → change aggregation to <strong>Count</strong></div></div>
+          <div class="ui-row highlight"><div class="ui-label">Card 2 → drag <strong>burn_rate_usd</strong> → aggregation: <strong>Sum</strong></div></div>
+          <div class="ui-row highlight"><div class="ui-label">Card 3 → drag <strong>days_to_lfd</strong> → aggregation: <strong>Average</strong></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="instr">
+      <div class="instr-num">2</div>
+      <div class="instr-body">
+        <div class="instr-text"><strong>Stacked Bar Chart — Containers by Status</strong></div>
+        <div class="ui-mock">
+          <div class="ui-path">Visualization: Stacked bar chart</div>
+          <div class="ui-row"><div class="ui-label">Y-axis → <strong>trade_lane_label</strong></div></div>
+          <div class="ui-row"><div class="ui-label">X-axis → <strong>container_id</strong> (Count)</div></div>
+          <div class="ui-row"><div class="ui-label">Legend → <strong>action_status</strong></div></div>
+        </div>
+        <div class="callout info"><div class="callout-icon">🎨</div><div>In Format → Colors, set Critical = <strong>#EF4444</strong> (red), Warning = <strong>#F59E0B</strong> (amber), Safe = <strong>#22C55E</strong> (green).</div></div>
+      </div>
+    </div>
+
+    <div class="instr">
+      <div class="instr-num">3</div>
+      <div class="instr-body">
+        <div class="instr-text"><strong>Table Visual — Full Container List</strong></div>
+        <div class="ui-mock">
+          <div class="ui-path">Visualization: Table</div>
+          <div class="ui-row"><div class="ui-label">Add columns: container_id, lease_type, vessel_name, days_to_lfd, burn_rate_usd, action_status</div></div>
+          <div class="ui-row highlight"><div class="ui-label">Sort by <strong>priority_score</strong> descending → most urgent at top</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="instr">
+      <div class="instr-num">4</div>
+      <div class="instr-body">
+        <div class="instr-text"><strong>Slicers — Filters for the whole page</strong></div>
+        <div class="ui-mock">
+          <div class="ui-path">Visualization: Slicer</div>
+          <div class="ui-row"><div class="ui-label">Slicer 1 → <strong>trade_lane_label</strong></div></div>
+          <div class="ui-row"><div class="ui-label">Slicer 2 → <strong>lease_type</strong></div></div>
+          <div class="ui-row"><div class="ui-label">Slicer 3 → <strong>action_status</strong></div></div>
+        </div>
+        <div class="callout good"><div class="callout-icon">✅</div><div>The slicers automatically filter every visual on the page — clicking "Critical" shows only critical containers everywhere.</div></div>
+      </div>
+    </div>
+  `
+},
+
+// ── STEP 8 ──────────────────────────────────────────────────
+{
+  title: "Export to PDF or Excel from Power BI",
+  badge: "Step 9 of 10",
+  content: `
+    <div class="callout good"><div class="callout-icon">📤</div><div>Power BI can export your entire report or individual visuals in multiple formats — no extra tools needed.</div></div>
+
+    <div class="instr">
+      <div class="instr-num">1</div>
+      <div class="instr-body">
+        <div class="instr-text"><strong>Export to PDF</strong> — the entire report as a presentation-ready document:</div>
+        <div class="ui-mock">
+          <div class="ui-path">Power BI Desktop <span>›</span> menu bar</div>
+          <div class="ui-row"><div class="ui-label">File</div></div>
+          <div class="ui-row"><div class="ui-label">→ Export</div></div>
+          <div class="ui-row highlight"><div class="ui-label">→ <strong>Export to PDF</strong></div><div class="ui-ctrl">→ saves .pdf</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="instr">
+      <div class="instr-num">2</div>
+      <div class="instr-body">
+        <div class="instr-text"><strong>Export to PowerPoint</strong> — each report page becomes a slide:</div>
+        <div class="ui-mock">
+          <div class="ui-path">File <span>›</span> Export</div>
+          <div class="ui-row highlight"><div class="ui-label">→ <strong>Export to PowerPoint</strong></div><div class="ui-ctrl">→ saves .pptx</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="instr">
+      <div class="instr-num">3</div>
+      <div class="instr-body">
+        <div class="instr-text"><strong>Export table data to Excel/CSV</strong> — click any table or chart visual, then:</div>
+        <div class="ui-mock">
+          <div class="ui-path">Right-click any visual <span>›</span> or click the "…" menu</div>
+          <div class="ui-row"><div class="ui-label">More options (…)</div></div>
+          <div class="ui-row highlight"><div class="ui-label">→ <strong>Export data</strong></div></div>
+          <div class="ui-row selected"><div class="ui-label">→ Summarized data (.xlsx) or Underlying data (.csv)</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="instr">
+      <div class="instr-num">4</div>
+      <div class="instr-body">
+        <div class="instr-text"><strong>Refresh data before exporting</strong> — always click Refresh first to get the latest pipeline output:</div>
+        <div class="ui-mock">
+          <div class="ui-path">Home ribbon</div>
+          <div class="ui-row highlight"><div class="ui-label">🔄 <strong>Refresh</strong> — pulls latest Gold data from GitHub</div><div class="ui-ctrl blue-btn">Refresh</div></div>
+        </div>
+        <div class="callout info"><div class="callout-icon">⏱️</div><div>The pipeline runs every hour. After each run, Refresh in Power BI fetches the new data automatically from the GitHub raw URL.</div></div>
+      </div>
+    </div>
+
+    <div class="callout good"><div class="callout-icon">✅</div><div>Your Power BI setup is complete. The report reads live from GitHub and can be exported to PDF, PowerPoint, Excel, or CSV at any time.</div></div>
+  `
+},
+
+// ── STEP 9 ──────────────────────────────────────────────────
+{
+  phase: "Phase 3 — Sharing with Others",
+  phaseIcon: "🔗",
+  phaseSub: "Let others fork and run their own copy in under 30 seconds.",
+  phaseTime: "~1 min",
+  title: "Share Your Repo for Others to Fork",
+  badge: "Step 10 of 10",
+  content: `
+    <div class="callout good"><div class="callout-icon">🎉</div><div>Your pipeline is live and fully automated. Here's how to share it so anyone can fork and run their own copy — without touching any code.</div></div>
+
+    <div class="instr">
+      <div class="instr-num">1</div>
+      <div class="instr-body">
+        <div class="instr-text"><strong>Share the repo link</strong> — anyone with this link can fork it:</div>
+        <div class="code"><div class="cp">YOUR REPO URL (share this)</div><span class="url">https://github.com/YOUR_USERNAME/container-optimizer</span></div>
+      </div>
+    </div>
+
+    <div class="instr">
+      <div class="instr-num">2</div>
+      <div class="instr-body">
+        <div class="instr-text"><strong>What happens when someone forks your repo:</strong></div>
+        <div class="ui-mock">
+          <div class="ui-row"><div class="instr-num" style="width:20px;height:20px;font-size:9px">1</div><div class="ui-label">They click <strong>Fork</strong> on your repo page</div></div>
+          <div class="ui-row"><div class="instr-num" style="width:20px;height:20px;font-size:9px">2</div><div class="ui-label">They go to Settings → Actions → set <strong>Read and write permissions</strong></div></div>
+          <div class="ui-row"><div class="instr-num" style="width:20px;height:20px;font-size:9px">3</div><div class="ui-label">Settings → Pages → Source: <strong>GitHub Actions</strong></div></div>
+          <div class="ui-row"><div class="instr-num" style="width:20px;height:20px;font-size:9px">4</div><div class="ui-label">Actions → <strong>Fork Setup</strong> → Run workflow</div></div>
+          <div class="ui-row highlight"><div class="instr-num" style="width:20px;height:20px;font-size:9px;background:var(--green)">✓</div><div class="ui-label"><strong>Their own live dashboard + hourly pipeline is running</strong></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="instr">
+      <div class="instr-num">3</div>
+      <div class="instr-body">
+        <div class="instr-text"><strong>Quick reference — all your live URLs:</strong></div>
+        <div class="code"><div class="cp">YOUR LIVE ENDPOINTS</div><span class="cmt"># Dashboard (GitHub Pages)</span>
+<span class="url">https://YOUR_USERNAME.github.io/container-optimizer/</span>
+
+<span class="cmt"># Gold data — JSON (Power BI Web Connector)</span>
+<span class="url">https://YOUR_USERNAME.github.io/container-optimizer/data/gold/containers.json</span>
+
+<span class="cmt"># Excel report (Power BI Desktop)</span>
+<span class="url">https://raw.githubusercontent.com/YOUR_USERNAME/container-optimizer/main/data/exports/container_report.xlsx</span>
+
+<span class="cmt"># Parquet file (Tableau)</span>
+<span class="url">https://raw.githubusercontent.com/YOUR_USERNAME/container-optimizer/main/data/gold/containers.parquet</span>
+
+<span class="cmt"># Pipeline runs — check status here</span>
+<span class="url">https://github.com/YOUR_USERNAME/container-optimizer/actions</span></div>
+      </div>
+    </div>
+
+    <div class="instr">
+      <div class="instr-num">4</div>
+      <div class="instr-body">
+        <div class="instr-text"><strong>When you're ready to plug in real shipping data</strong> — only one file changes:</div>
+        <div class="code"><div class="cp">ONLY FILE TO EDIT FOR REAL DATA</div><span class="cmd">pipeline/bronze_ingest.py</span>
+<span class="cmt"># Replace generate_ais_feed()      → real MarineTraffic API call</span>
+<span class="cmt"># Replace generate_container_events() → real EDI 322 / S3 parser</span>
+<span class="cmt"># Replace generate_contracts()     → real ERP SQL query</span>
+<span class="cmt"># Everything else (Silver, Gold, Excel, Dashboard) stays the same.</span></div>
+      </div>
+    </div>
+
+    <div class="callout good"><div class="callout-icon">🚀</div><div>Setup is complete. Your Medallion pipeline runs every hour, your dashboard is live, your Excel report is auto-generated, and anyone can fork it in 30 seconds.</div></div>
+  `
+}
+
+];
+
+// ═══════════════════════════════════════════════════════════
+// STATE + RENDER
+// ═══════════════════════════════════════════════════════════
+
+let currentStep = 0;
+let completedSteps = new Set();
+
+function goToStep(n) {
+  currentStep = n;
+  render();
+  document.getElementById("content").scrollTop = 0;
+  window.scrollTo(0,0);
+}
+
+function markDone(n) {
+  completedSteps.add(n);
+  const btn = document.getElementById(`check-btn-${n}`);
+  if (btn) { btn.textContent = "✓ Done"; btn.classList.add("done-btn"); }
+  updateSidebar();
+  updateProgress();
+}
+
+function updateProgress() {
+  const pct = Math.round((completedSteps.size / STEPS.length) * 100);
+  document.getElementById("prog-fill").style.width = pct + "%";
+  document.getElementById("prog-pct").textContent = pct + "%";
+}
+
+function updateSidebar() {
+  document.querySelectorAll(".nav-item").forEach((el, i) => {
+    el.classList.remove("active","done");
+    if (i === currentStep) el.classList.add("active");
+    if (completedSteps.has(i)) {
+      el.classList.add("done");
+      const num = el.querySelector(".nav-num");
+      if (num) { num.textContent = ""; }
+      const tag = el.querySelector(".nav-tag");
+      if (tag) { tag.textContent = "done"; }
+    }
+  });
+}
+
+function toggleStep(idx) {
+  const el = document.getElementById(`step-card-${idx}`);
+  if (el) el.classList.toggle("open");
+}
+
+function copyCode(btn) {
+  const code = btn.parentElement;
+  const text = Array.from(code.childNodes)
+    .filter(n => n.nodeType === 3 || n.tagName === "SPAN")
+    .map(n => n.textContent).join("\n").trim();
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = "copied!";
+    setTimeout(() => btn.textContent = "copy", 1500);
+  });
+}
+
+function render() {
+  const step = STEPS[currentStep];
+  const isLast = currentStep === STEPS.length - 1;
+  const isDone = completedSteps.has(currentStep);
+
+  let phaseHtml = "";
+  if (step.phase) {
+    phaseHtml = `
+      <div class="phase-header">
+        <div class="phase-icon">${step.phaseIcon}</div>
+        <div class="phase-info">
+          <div class="phase-title">${step.phase}</div>
+          <div class="phase-sub">${step.phaseSub}</div>
+        </div>
+        <div class="phase-time">${step.phaseTime}</div>
+      </div>`;
+  }
+
+  const html = `
+    ${phaseHtml}
+    <div class="step open ${isDone ? 'done-step' : ''}" id="step-card-${currentStep}">
+      <div class="step-head" onclick="toggleStep(${currentStep})">
+        <div class="step-num">${isDone ? '✓' : currentStep + 1}</div>
+        <div class="step-title">${step.title}</div>
+        <div class="step-badge">${step.badge}</div>
+        <div class="step-chevron">▼</div>
+      </div>
+      <div class="step-body">
+        ${step.content}
+        <button class="check-btn ${isDone ? 'done-btn' : ''}" id="check-btn-${currentStep}"
+          onclick="markDone(${currentStep})">
+          ${isDone ? '✓ Done' : '☑ Mark as done'}
+        </button>
+      </div>
+    </div>
+
+    <div class="phase-nav">
+      ${currentStep > 0 ? `<button class="phase-btn prev" onclick="goToStep(${currentStep - 1})">← Previous</button>` : ""}
+      <div style="flex:1"></div>
+      ${!isLast
+        ? `<button class="phase-btn next" onclick="goToStep(${currentStep + 1})">Next Step →</button>`
+        : `<button class="phase-btn next final" onclick="showComplete()">🚀 Setup Complete!</button>`
+      }
+    </div>
+  `;
+
+  document.getElementById("content").innerHTML = html;
+  updateSidebar();
+  updateProgress();
+}
+
+function showComplete() {
+  completedSteps.add(currentStep);
+  updateProgress();
+  document.getElementById("content").innerHTML = `
+    <div class="complete-screen">
+      <div class="complete-icon">🎉</div>
+      <div class="complete-title">You're Live.</div>
+      <div class="complete-sub">Your Medallion pipeline is running every hour. Your dashboard is published. Your Excel report is auto-generated. Anyone can fork this in 30 seconds.</div>
+      <div class="complete-links">
+        <a class="cl-link github" href="https://github.com/YOUR_USERNAME/container-optimizer" target="_blank">🐙 Your GitHub Repo</a>
+        <a class="cl-link pages" href="https://YOUR_USERNAME.github.io/container-optimizer/" target="_blank">🌐 Live Dashboard</a>
+        <a class="cl-link excel" href="https://github.com/YOUR_USERNAME/container-optimizer/raw/main/data/exports/container_report.xlsx">📗 Download Excel</a>
+        <a class="cl-link pbi" href="https://powerbi.microsoft.com/desktop/" target="_blank">📊 Power BI Desktop</a>
+      </div>
+      <div style="margin-top:32px;font-size:13px;color:var(--ink3)">Remember to replace YOUR_USERNAME in all URLs above.</div>
+    </div>
+  `;
+}
+
+// Init
+render();
+</script>
+</body>
+</html>

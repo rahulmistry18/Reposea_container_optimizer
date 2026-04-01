@@ -1,0 +1,46 @@
+# DVC Pipeline — dvc.yaml
+# Defines the Bronze → Silver → Gold stages for data versioning and reproducibility.
+# Run:    dvc repro
+# Status: dvc status
+# Diff:   dvc diff HEAD~1
+
+stages:
+  bronze:
+    cmd: python -m pipeline.bronze_ingest
+    deps:
+      - pipeline/bronze_ingest.py
+    outs:
+      - data/bronze/ais_feed.json
+      - data/bronze/container_events.json
+      - data/bronze/contracts.json
+
+  silver:
+    cmd: python -m pipeline.silver_clean
+    deps:
+      - pipeline/silver_clean.py
+      - data/bronze/ais_feed.json
+      - data/bronze/container_events.json
+      - data/bronze/contracts.json
+    outs:
+      - data/silver/merged.parquet
+      - data/silver/merged.json
+
+  gold:
+    cmd: python -m pipeline.gold_aggregate
+    deps:
+      - pipeline/gold_aggregate.py
+      - data/silver/merged.parquet
+    outs:
+      - data/gold/containers.parquet
+      - data/gold/containers.json
+      - data/gold/summary.json
+      - data/gold/run_manifest.json
+    metrics:
+      - data/gold/summary.json:
+          cache: false
+
+plots:
+  - data/gold/containers.json:
+      x: days_to_lfd
+      y: burn_rate_usd
+      title: "Buffer vs Burn Rate"

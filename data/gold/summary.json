@@ -1,0 +1,95 @@
+{
+  "generated_at": "2026-04-01T07:06:53.420347+00:00",
+  "run_count": 8,
+  "total_containers": 35,
+  "critical_count": 7,
+  "warning_count": 1,
+  "safe_count": 27,
+  "total_penalty_usd": 2828.45,
+  "avg_buffer_days": 11.6,
+  "by_trade_lane": [
+    {
+      "trade_lane": "ASIA_EUR",
+      "count": 10,
+      "critical": 1,
+      "total_burn": 609.31
+    },
+    {
+      "trade_lane": "INTRA_ASIA",
+      "count": 7,
+      "critical": 1,
+      "total_burn": 266.29
+    },
+    {
+      "trade_lane": "TRANS_ATL",
+      "count": 5,
+      "critical": 1,
+      "total_burn": 48.97
+    },
+    {
+      "trade_lane": "TRANS_PAC",
+      "count": 13,
+      "critical": 4,
+      "total_burn": 1903.88
+    }
+  ],
+  "by_lease_type": [
+    {
+      "lease_type": "Long-Term",
+      "count": 10,
+      "critical": 3
+    },
+    {
+      "lease_type": "Master Lease",
+      "count": 9,
+      "critical": 4
+    },
+    {
+      "lease_type": "One-Way",
+      "count": 16,
+      "critical": 0
+    }
+  ],
+  "top_priority": [
+    {
+      "container_id": "HLXU6378692",
+      "lease_type": "Master Lease",
+      "trade_lane_label": "Trans-Pacific",
+      "days_to_lfd": -7.59,
+      "burn_rate_usd": 561.66,
+      "action_status": "Critical"
+    },
+    {
+      "container_id": "EITU3189964",
+      "lease_type": "Master Lease",
+      "trade_lane_label": "Trans-Pacific",
+      "days_to_lfd": -9.59,
+      "burn_rate_usd": 757.61,
+      "action_status": "Critical"
+    },
+    {
+      "container_id": "CLHU9880624",
+      "lease_type": "Long-Term",
+      "trade_lane_label": "Trans-Pacific",
+      "days_to_lfd": -12.59,
+      "burn_rate_usd": 478.42,
+      "action_status": "Critical"
+    },
+    {
+      "container_id": "MSKU1014608",
+      "lease_type": "Long-Term",
+      "trade_lane_label": "Intra-Asia",
+      "days_to_lfd": -8.59,
+      "burn_rate_usd": 266.29,
+      "action_status": "Critical"
+    },
+    {
+      "container_id": "MAEU3543646",
+      "lease_type": "Master Lease",
+      "trade_lane_label": "Asia-Europe",
+      "days_to_lfd": -5.59,
+      "burn_rate_usd": 609.31,
+      "action_status": "Critical"
+    }
+  ]
+}

@@ -1,0 +1,124 @@
+name: RepoSea Setup — First-Time Configuration
+
+# Runs on first push to main (fork or original).
+# Bootstraps pipeline, patches URLs, deploys GitHub Pages.
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "data/gold/**"
+      - "data/state/**"
+      - "data/exports/**"
+
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages:    write
+  id-token: write
+  actions:  write
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  setup-and-run:
+    name: "Bootstrap RepoSea pipeline"
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    environment:
+      name: github-pages
+      url: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run pipeline (Bronze to Silver to Gold)
+        run: python -m pipeline.run_pipeline --env prod
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+
+      - name: Generate Excel report
+        run: python -m pipeline.export_excel
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+
+      - name: Patch dashboard URLs to this repo
+        run: |
+          OWNER="${{ github.repository_owner }}"
+          REPO="${{ github.event.repository.name }}"
+          echo "Patching URLs for ${OWNER}/${REPO}"
+          for FILE in dashboard/index.html dashboard/map.html docs/POWER_BI_GUIDE.md README.md; do
+            [ -f "$FILE" ] || continue
+            sed -i "s|YOUR_USERNAME/reposea|${OWNER}/${REPO}|g" "$FILE"
+            sed -i "s|YOUR_USERNAME\.github\.io/reposea|${OWNER}.github.io/${REPO}|g" "$FILE"
+            sed -i "s|YOUR_USERNAME|${OWNER}|g" "$FILE"
+          done
+
+      - name: Commit outputs
+        run: |
+          git config user.name  "RepoSea Bot"
+          git config user.email "pipeline@reposea.bot"
+          git add data/gold/ data/exports/ dashboard/ docs/ README.md
+          git add data/state/container_history.json 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "Nothing to commit"
+          else
+            git commit -m "chore: initial pipeline run [skip ci]"
+            git push
+          fi
+
+      - name: Build GitHub Pages bundle
+        run: |
+          mkdir -p _site/data/gold _site/data/exports
+          cp dashboard/index.html                       _site/index.html
+          cp dashboard/map.html                         _site/map.html
+          cp data/gold/containers.json                  _site/data/gold/containers.json
+          cp data/gold/summary.json                     _site/data/gold/summary.json
+          [ -f data/gold/history.json ] && cp data/gold/history.json _site/data/gold/history.json || true
+          [ -f data/gold/market.json  ] && cp data/gold/market.json  _site/data/gold/market.json  || true
+          [ -f data/exports/reposea_report.xlsx ] && cp data/exports/reposea_report.xlsx _site/data/exports/ || true
+          echo "Pages bundle: $(du -sh _site | cut -f1)"
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Print summary
+        if: always()
+        run: |
+          OWNER="${{ github.repository_owner }}"
+          REPO="${{ github.event.repository.name }}"
+          python3 -c "
+          import json, sys
+          try:
+              s = json.load(open('data/gold/summary.json'))
+              print(f'Containers: {s[\"total_containers\"]} | Critical: {s[\"critical_count\"]} | Exposure: \${s[\"total_penalty_usd\"]:,.0f}')
+          except Exception as e:
+              print(f'Could not read summary: {e}')
+          "
+          echo "Dashboard: https://${OWNER}.github.io/${REPO}/"
+          echo "Fleet Map: https://${OWNER}.github.io/${REPO}/map.html"

@@ -1,0 +1,166 @@
+name: RepoSea — Hourly Pipeline
+
+on:
+  schedule:
+    - cron: "0 * * * *"
+
+  workflow_dispatch:
+    inputs:
+      env:
+        description: "Environment (prod / dev)"
+        required: false
+        default: "prod"
+        type: choice
+        options: [prod, dev]
+
+  push:
+    branches: [main]
+    paths:
+      - "pipeline/**"
+      - ".github/workflows/pipeline.yml"
+
+permissions:
+  contents: write
+  pages:    write
+  id-token: write
+
+concurrency:
+  group: pipeline-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  # ── JOB 1: Run the Medallion Pipeline ──────────────────────────────────────
+  pipeline:
+    name: "Bronze → Silver → Gold → Excel"
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    outputs:
+      critical_count: ${{ steps.summary.outputs.critical_count }}
+      total_exposure: ${{ steps.summary.outputs.total_exposure }}
+      run_ts:         ${{ steps.summary.outputs.run_ts }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run pipeline
+        run: python -m pipeline.run_pipeline --env ${{ inputs.env || 'prod' }}
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+          OPENWEATHER_API_KEY: ${{ secrets.OPENWEATHER_API_KEY }}
+
+      - name: Generate Excel report
+        run: python -m pipeline.export_excel
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+
+      - name: Validate Gold outputs
+        id: summary
+        run: |
+          python3 - << 'PYEOF'
+          import json, os, sys
+          try:
+              s = json.load(open('data/gold/summary.json'))
+              print(f"Containers : {s['total_containers']}")
+              print(f"Critical   : {s['critical_count']}")
+              print(f"Warning    : {s['warning_count']}")
+              print(f"Exposure   : ${s['total_penalty_usd']:,.2f}")
+              if s['total_containers'] == 0:
+                  print("ERROR: Gold output is empty")
+                  sys.exit(1)
+              with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+                  f.write(f"critical_count={s['critical_count']}\n")
+                  f.write(f"total_exposure={s['total_penalty_usd']:.2f}\n")
+                  f.write(f"run_ts={s['generated_at'][:16]}\n")
+          except Exception as e:
+              print(f"Validation failed: {e}")
+              sys.exit(1)
+          PYEOF
+
+      - name: Commit Gold data + Excel
+        run: |
+          git config user.name  "RepoSea Bot"
+          git config user.email "pipeline@reposea.bot"
+          git add data/gold/
+          git add data/exports/reposea_report.xlsx || true
+          git add data/state/container_history.json || true
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore(data): pipeline run $(date -u +'%Y-%m-%dT%H:%M:%SZ') [skip ci]"
+            git push
+          fi
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pipeline-output-${{ github.run_number }}
+          path: |
+            data/gold/
+            data/exports/
+          retention-days: 30
+
+  # ── JOB 2: Deploy to GitHub Pages ──────────────────────────────────────────
+  deploy-pages:
+    name: "Deploy → GitHub Pages"
+    runs-on: ubuntu-latest
+    needs: pipeline
+    if: github.ref == 'refs/heads/main'
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Build Pages bundle
+        run: |
+          mkdir -p _site/data/gold _site/data/exports
+          cp dashboard/index.html                       _site/index.html
+          cp dashboard/map.html                         _site/map.html
+          cp data/gold/containers.json                  _site/data/gold/containers.json
+          cp data/gold/summary.json                     _site/data/gold/summary.json
+          [ -f data/gold/history.json ] && cp data/gold/history.json _site/data/gold/history.json || echo "No history yet"
+          [ -f data/gold/market.json  ] && cp data/gold/market.json  _site/data/gold/market.json  || true
+          [ -f data/exports/reposea_report.xlsx ] && cp data/exports/reposea_report.xlsx _site/data/exports/ || true
+          echo "Bundle: $(du -sh _site | cut -f1)"
+          ls -lh _site/data/gold/
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  # ── JOB 3: Alert on critical containers ────────────────────────────────────
+  alert:
+    name: "Alert — Critical Check"
+    runs-on: ubuntu-latest
+    needs: pipeline
+    if: always()
+    steps:
+      - name: Report
+        run: |
+          echo "Run    : ${{ needs.pipeline.outputs.run_ts }}"
+          echo "Critical: ${{ needs.pipeline.outputs.critical_count }}"
+          echo "Exposure: \$${{ needs.pipeline.outputs.total_exposure }}"

@@ -1,0 +1,57 @@
+{
+  "cached_at": 1775027203.1714272,
+  "fetched_at": "2026-04-01T07:06:43.170999+00:00",
+  "source": "synthetic_seasonal",
+  "congestion": {
+    "CNSHA": 0.749,
+    "NLRTM": 0.338,
+    "DEHAM": 0.265,
+    "USLAX": 0.749,
+    "USNYC": 0.49,
+    "SGSIN": 0.349,
+    "KRPUS": 0.345,
+    "TWKHH": 0.52,
+    "GBFXT": 0.411,
+    "BEANR": 0.348,
+    "USLONG": 0.248,
+    "USSEA": 0.523,
+    "CNQIN": 0.517,
+    "CNYTN": 0.442,
+    "HKHKG": 0.766,
+    "JPYOK": 0.505
+  },
+  "wait_hours": {
+    "CNSHA": 30.3,
+    "NLRTM": 14.1,
+    "DEHAM": 18.5,
+    "USLAX": 41.3,
+    "USNYC": 31.0,
+    "SGSIN": 8.7,
+    "KRPUS": 16.1,
+    "TWKHH": 20.0,
+    "GBFXT": 21.2,
+    "BEANR": 16.5,
+    "USLONG": 25.7,
+    "USSEA": 26.3,
+    "CNQIN": 24.9,
+    "CNYTN": 19.9,
+    "HKHKG": 14.6,
+    "JPYOK": 16.8
+  },
+  "lane_delay_factor": {
+    "TRANS_PAC": 1.0,
+    "TRANS_ATL": 1.0,
+    "ASIA_EUR": 1.15,
+    "INTRA_ASIA": 1.0
+  },
+  "active_disruptions": [
+    {
+      "name": "Suez Congestion",
+      "lanes": [
+        "ASIA_EUR"
+      ],
+      "factor": 1.15
+    }
+  ],
+  "weather": {}
+}

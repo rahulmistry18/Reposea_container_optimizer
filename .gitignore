@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.Python
+venv/
+.venv/
+env/
+.env
+
+# DVC cache
+.dvc/cache/
+.dvc/tmp/
+.dvc/lock
+
+# Bronze + Silver are ephemeral (generated each run)
+data/bronze/*.json
+data/silver/*.parquet
+data/silver/*.json
+
+# Gold JSON/Parquet ARE committed (dashboard + Power BI reads them)
+# data/gold/ ← do NOT ignore
+
+# Excel exports ARE committed (download link in dashboard)
+# data/exports/ ← do NOT ignore
+
+# OS
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# Test artifacts
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb

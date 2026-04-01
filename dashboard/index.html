@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RepoSea — Container Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --abyss:#071E2E;--depth1:#0A2840;--depth2:#0D3355;--depth3:#1A3F5C;
+  --teal:#0A9396;--teal2:#007F82;--teal-dim:rgba(10,147,150,0.15);--teal-glow:rgba(10,147,150,0.08);
+  --foam:#E8F4F6;--foam2:#C4E0E5;--mist:rgba(232,244,246,0.06);--mist2:rgba(232,244,246,0.12);
+  --alert:#E05252;--alert-dim:rgba(224,82,82,0.12);--alert-bdr:rgba(224,82,82,0.3);
+  --warn:#D4A030;--warn-dim:rgba(212,160,48,0.1);--warn-bdr:rgba(212,160,48,0.3);
+  --serif:'EB Garamond',Georgia,serif;--mono:'JetBrains Mono',monospace;--sans:'Inter',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:var(--abyss);color:var(--foam);font-family:var(--sans);font-size:13px;min-height:100vh}
+::-webkit-scrollbar{width:3px;height:3px}::-webkit-scrollbar-thumb{background:var(--depth3);border-radius:2px}
+
+/* ── TOPBAR ── */
+.topbar{background:var(--abyss);border-bottom:1px solid var(--mist2);height:52px;padding:0 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-mark{width:32px;height:32px;background:var(--teal);display:flex;align-items:center;justify-content:center;border-radius:3px;flex-shrink:0}
+.brand-name{font-family:var(--serif);font-size:19px;font-weight:500;color:var(--foam);letter-spacing:-.01em}
+.brand-name span{color:var(--teal)}
+.brand-sep{width:1px;height:16px;background:var(--mist2)}
+.brand-sub{font-family:var(--mono);font-size:9px;color:var(--foam2);letter-spacing:.12em;opacity:.5;text-transform:uppercase}
+.topbar-mid{display:flex;gap:26px}
+.nav-i{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:rgba(232,244,246,.32);cursor:pointer;text-transform:uppercase;padding-bottom:2px}
+.nav-i.act{color:var(--foam);border-bottom:1.5px solid var(--teal)}
+.topbar-right{display:flex;align-items:center;gap:10px}
+
+/* Refresh button — the star of this show */
+.refresh-btn{
+  display:flex;align-items:center;gap:6px;
+  padding:5px 12px;
+  background:var(--teal-glow);
+  border:1px solid rgba(10,147,150,.4);
+  border-radius:2px;
+  font-family:var(--mono);font-size:10px;font-weight:700;
+  color:var(--teal);letter-spacing:.08em;text-transform:uppercase;
+  cursor:pointer;transition:all .2s;
+}
+.refresh-btn:hover{background:var(--teal-dim);border-color:var(--teal)}
+.refresh-btn:active{transform:scale(.97)}
+.refresh-btn.spinning .refresh-icon{animation:spin 0.7s linear infinite}
+.refresh-btn.done{color:#4ADE80;border-color:rgba(74,222,128,.4);background:rgba(74,222,128,.06)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.refresh-icon{width:12px;height:12px;transition:transform .2s;display:inline-block}
+
+.live-badge{display:flex;align-items:center;gap:5px;padding:4px 9px;background:var(--teal-glow);border:1px solid rgba(10,147,150,.3);border-radius:2px;font-family:var(--mono);font-size:9px;color:var(--teal);letter-spacing:.1em}
+.sonar-p{width:6px;height:6px;border-radius:50%;background:var(--teal);animation:sp 2.5s ease-in-out infinite}
+@keyframes sp{0%,100%{opacity:1}50%{opacity:.28}}
+.run-stamp{font-family:var(--mono);font-size:9px;color:rgba(232,244,246,.25);letter-spacing:.04em}
+.hbtn{font-family:var(--mono);font-size:9px;border:1px solid;padding:4px 9px;border-radius:2px;text-decoration:none;letter-spacing:.08em;transition:all .15s;cursor:pointer}
+.hbtn.teal{color:var(--teal);border-color:rgba(10,147,150,.3)}.hbtn.teal:hover{background:var(--teal-glow)}
+.hbtn.ghost{color:rgba(232,244,246,.32);border-color:var(--mist2)}.hbtn.ghost:hover{color:var(--foam2)}
+
+/* ── SONAR TRACK ── */
+.sonar-track{background:var(--depth1);border-bottom:1px solid var(--mist2);padding:11px 20px;display:flex;align-items:center;overflow-x:auto}
+.st-stage{flex:1;display:flex;align-items:center;cursor:pointer;min-width:0}
+.st-inner{flex:1;padding:6px 10px;display:flex;flex-direction:column;align-items:center;gap:4px;border-radius:2px;transition:background .15s}
+.st-inner:hover{background:var(--mist)}
+.st-count{font-family:var(--serif);font-size:17px;font-weight:500;color:var(--foam);line-height:1}
+.st-dot{width:8px;height:8px;border-radius:50%;border:1.5px solid var(--mist2);background:var(--depth2)}
+.st-lbl{font-family:var(--mono);font-size:7px;letter-spacing:.1em;text-transform:uppercase;color:rgba(232,244,246,.32)}
+.st-conn{width:18px;flex-shrink:0;height:1px;background:var(--mist2);margin-bottom:5px}
+.s-sea .st-count,.s-sea .st-lbl{color:var(--teal)}.s-sea .st-dot{border-color:var(--teal);background:var(--teal)}
+.s-free .st-count{color:var(--warn)}.s-free .st-dot{border-color:var(--warn)}
+.s-overdue .st-count,.s-overdue .st-lbl{color:var(--alert)}.s-overdue .st-dot{border-color:var(--alert);background:var(--alert);animation:sp 1.5s ease-in-out infinite}
+.st-tail{font-family:var(--mono);font-size:8px;color:rgba(232,244,246,.16);white-space:nowrap;padding-bottom:5px;margin-left:8px}
+
+/* ── MAIN ── */
+.main{padding:16px 20px;max-width:1760px;margin:0 auto}
+.fml-strip{background:var(--depth1);border:1px solid var(--teal-dim);padding:7px 13px;border-radius:2px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:13px}
+.fml-eq{font-family:var(--mono);font-size:11px;color:var(--teal);letter-spacing:.03em}
+.fml-div{width:1px;height:13px;background:var(--teal-dim);flex-shrink:0}
+.fml-rules{font-family:var(--mono);font-size:10px;color:rgba(232,244,246,.32)}
+
+/* ── KPI GAUGES ── */
+.kpi-row{display:grid;grid-template-columns:repeat(6,1fr);gap:9px;margin-bottom:13px}
+.kpi{background:var(--depth1);border:1px solid var(--mist2);border-radius:2px;padding:11px 13px;position:relative;overflow:hidden;transition:border-color .3s}
+.kpi.refreshing{border-color:rgba(10,147,150,.4);animation:kpi-pulse .8s ease-in-out infinite}
+@keyframes kpi-pulse{0%,100%{opacity:1}50%{opacity:.6}}
+.kpi-tide{position:absolute;bottom:0;left:0;right:0;background:var(--teal-glow);pointer-events:none;transition:height .6s ease}
+.kpi-lbl{font-family:var(--mono);font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:rgba(232,244,246,.28);margin-bottom:5px;position:relative}
+.kpi-val{font-family:var(--serif);font-size:23px;font-weight:500;line-height:1;margin-bottom:2px;position:relative;color:var(--foam)}
+.kpi-val.red{color:var(--alert)}.kpi-val.amber{color:var(--warn)}.kpi-val.teal{color:var(--teal)}
+.kpi-sub{font-family:var(--mono);font-size:8px;color:rgba(232,244,246,.26);position:relative}
+
+/* ── CONTROLS ── */
+.controls{display:flex;align-items:center;gap:7px;margin-bottom:10px;flex-wrap:wrap}
+.clbl{font-family:var(--mono);font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:rgba(232,244,246,.28);white-space:nowrap}
+.seg-grp{display:flex;background:var(--depth1);border:1px solid var(--mist2);border-radius:2px;overflow:hidden}
+.seg{padding:5px 10px;font-family:var(--mono);font-size:10px;letter-spacing:.04em;cursor:pointer;color:rgba(232,244,246,.36);border:none;background:transparent;transition:all .15s;white-space:nowrap;text-transform:uppercase}
+.seg:hover{color:var(--foam2);background:var(--mist)}.seg.act{color:var(--teal);background:var(--teal-glow);border-bottom:1.5px solid var(--teal)}
+.fsel{background:var(--depth1);border:1px solid var(--mist2);border-radius:2px;padding:5px 22px 5px 8px;color:var(--foam2);font-family:var(--mono);font-size:10px;cursor:pointer;outline:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%234A8FA0'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 7px center;text-transform:uppercase;letter-spacing:.04em}
+.fsel option{background:#071E2E}
+.sbox{background:var(--depth1);border:1px solid var(--mist2);border-radius:2px;padding:5px 9px;color:var(--foam);font-family:var(--mono);font-size:10px;outline:none;width:150px}
+.sbox::placeholder{color:rgba(232,244,246,.2)}.sbox:focus{border-color:var(--teal)}
+.spacer{flex:1}.rcount{font-family:var(--mono);font-size:9px;color:rgba(232,244,246,.26)}
+
+/* ── TABLE ── */
+.tbl-wrap{background:var(--depth1);border:1px solid var(--mist2);border-radius:2px;overflow:hidden;margin-bottom:13px}
+.tbl-scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:1100px}
+thead th{background:var(--abyss);border-bottom:1px solid var(--mist2);padding:7px 9px;text-align:left;font-family:var(--mono);font-size:8px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(232,244,246,.26);white-space:nowrap;cursor:pointer;user-select:none;transition:color .15s}
+thead th:hover{color:var(--foam2)}thead th.sorted{color:var(--teal)}
+.si{font-size:7px;margin-left:2px}
+tbody tr{border-bottom:1px solid var(--mist);transition:background .1s;cursor:pointer}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:rgba(10,147,150,.06)}
+tbody tr.row-new{animation:row-flash .6s ease-out}
+@keyframes row-flash{0%{background:rgba(10,147,150,.22)}100%{background:transparent}}
+tbody td{padding:7px 9px;font-family:var(--mono);font-size:11px;color:rgba(232,244,246,.48);white-space:nowrap}
+.td-id{color:var(--foam)!important;font-weight:500;letter-spacing:.04em}
+.td-id:hover{color:var(--teal)!important;text-decoration:underline;text-underline-offset:2px}
+
+/* Stage / Status / Lease badges — same as before */
+.stg{display:inline-flex;align-items:center;gap:3px;padding:2px 6px;border-radius:2px;font-family:var(--mono);font-size:8px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;border:1px solid}
+.stg-dot{width:4px;height:4px;border-radius:50%;background:currentColor}
+.stg-GATE_IN{color:var(--foam2);border-color:var(--mist2);background:var(--mist)}
+.stg-AT_SEA{color:var(--teal);border-color:rgba(10,147,150,.3);background:var(--teal-glow)}
+.stg-ARRIVED{color:#64C8CC;border-color:rgba(100,200,204,.3);background:rgba(100,200,204,.08)}
+.stg-IN_FREE_DAYS{color:var(--warn);border-color:var(--warn-bdr);background:var(--warn-dim)}
+.stg-OVERDUE{color:var(--alert);border-color:var(--alert-bdr);background:var(--alert-dim)}
+.sts{display:inline-flex;align-items:center;gap:3px;padding:2px 6px;border-radius:2px;font-family:var(--mono);font-size:8px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;border:1px solid}
+.sts-dot{width:4px;height:4px;border-radius:50%;background:currentColor}
+.sts-c{color:var(--alert);border-color:var(--alert-bdr);background:var(--alert-dim)}
+.sts-w{color:var(--warn);border-color:var(--warn-bdr);background:var(--warn-dim)}
+.sts-s{color:var(--teal);border-color:rgba(10,147,150,.3);background:var(--teal-glow)}
+.ltag{background:var(--mist);border:1px solid var(--mist2);border-radius:2px;padding:1px 5px;font-family:var(--mono);font-size:9px;color:rgba(232,244,246,.38)}
+.ltag.ow{color:#64A8E0;border-color:rgba(100,168,224,.25);background:rgba(100,168,224,.07)}
+.ltag.ml{color:#A880CC;border-color:rgba(168,128,204,.25);background:rgba(168,128,204,.07)}
+.ltag.lt{color:#4AAF8A;border-color:rgba(74,175,138,.25);background:rgba(74,175,138,.07)}
+.vdepth{display:flex;align-items:center;gap:6px;min-width:88px}
+.vd-track{flex:1;height:3px;background:var(--depth3);border-radius:1px;overflow:hidden}
+.vd-fill{height:100%;border-radius:1px}
+.vd-pct{font-family:var(--mono);font-size:9px;color:rgba(232,244,246,.28);min-width:24px;text-align:right}
+.bufbar{display:flex;align-items:center;gap:5px}
+.bb-track{width:38px;height:3px;background:var(--depth3);border-radius:1px;overflow:hidden}
+.bb-fill{height:100%;border-radius:1px}
+.loctag{font-family:var(--mono);font-size:9px;background:var(--mist);border:1px solid var(--mist2);border-radius:2px;padding:1px 5px;color:rgba(232,244,246,.38);max-width:145px;overflow:hidden;text-overflow:ellipsis;display:inline-block}
+.burn-r{color:var(--alert)!important;font-weight:500}.burn-d{color:rgba(232,244,246,.28)!important}
+.empty{text-align:center;padding:28px;color:rgba(232,244,246,.26);font-family:var(--serif);font-size:15px;font-style:italic}
+.history-btn{font-family:var(--mono);font-size:8px;padding:2px 6px;border:1px solid var(--mist2);border-radius:2px;color:rgba(232,244,246,.38);cursor:pointer;background:transparent;transition:all .15s;white-space:nowrap}
+.history-btn:hover{color:var(--teal);border-color:var(--teal-dim)}
+
+/* ── BOTTOM GRID ── */
+.btm-grid{display:grid;grid-template-columns:1fr 1fr 252px;gap:10px;margin-bottom:10px}
+.panel{background:var(--depth1);border:1px solid var(--mist2);border-radius:2px;padding:12px 14px}
+.panel-title{font-family:var(--mono);font-size:8px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:rgba(232,244,246,.26);margin-bottom:11px;padding-bottom:6px;border-bottom:1px solid var(--mist2)}
+.sonar-bars{display:flex;align-items:flex-end;gap:14px;height:64px;margin-bottom:6px}
+.sb-col{display:flex;flex-direction:column;align-items:center;gap:3px;flex:1}
+.sb-bar{width:100%;border-radius:2px 2px 0 0;background:var(--depth3);transition:height .5s ease}
+.sb-bar.active{background:var(--teal)}.sb-bar.danger{background:var(--alert)}.sb-bar.caution{background:var(--warn)}
+.sb-val{font-family:var(--mono);font-size:8px;color:rgba(232,244,246,.32)}
+.sb-lbl{font-family:var(--mono);font-size:7px;letter-spacing:.06em;color:rgba(232,244,246,.26);text-transform:uppercase}
+.sonar-labels{display:flex;gap:14px}
+.smr{display:flex;align-items:center;gap:7px;margin-bottom:8px}
+.smr-ico{font-size:10px;width:15px;text-align:center;flex-shrink:0}
+.smr-lbl{font-family:var(--mono);font-size:8px;color:rgba(232,244,246,.42);min-width:72px;text-transform:uppercase;letter-spacing:.06em}
+.smr-track{flex:1;height:3px;background:var(--depth3);border-radius:2px;overflow:hidden}
+.smr-fill{height:100%;border-radius:2px;transition:width .5s ease}
+.smr-n{font-family:var(--serif);font-size:14px;color:var(--foam);min-width:17px;text-align:right}
+.pri-item{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--mist)}
+.pri-item:last-child{border-bottom:none}
+.pri-n{font-family:var(--serif);font-size:19px;font-weight:500;min-width:20px;line-height:1;color:var(--depth3)}
+.pri-body{flex:1}
+.pri-name{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.04em;margin-bottom:1px;text-transform:uppercase}
+.pri-desc{font-size:10px;color:rgba(232,244,246,.32);line-height:1.4}
+.pri-c{font-family:var(--serif);font-size:18px;font-weight:500}
+.sig-strip{background:var(--depth1);border:1px solid var(--mist2);border-radius:2px;padding:8px 12px;display:flex;align-items:center;gap:8px;overflow:hidden}
+.sig-lbl{font-family:var(--mono);font-size:8px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(232,244,246,.26);white-space:nowrap;flex-shrink:0}
+.sig-scroll{display:flex;gap:6px;overflow-x:auto;flex:1}
+.sgi{flex-shrink:0;padding:2px 8px;border-radius:2px;border:1px solid;font-family:var(--mono);font-size:9px;white-space:nowrap}
+.sgi-r{color:var(--alert);border-color:var(--alert-bdr);background:var(--alert-dim)}
+.sgi-w{color:var(--warn);border-color:var(--warn-bdr);background:var(--warn-dim)}
+.sgi-t{color:var(--teal);border-color:rgba(10,147,150,.3);background:var(--teal-glow)}
+.sgi-g{color:rgba(232,244,246,.42);border-color:var(--mist2);background:var(--mist)}
+
+/* ══════════════════════════════════════════════════════════
+   JOURNEY MODAL
+   ══════════════════════════════════════════════════════════ */
+.modal-overlay{
+  display:none;position:fixed;inset:0;z-index:1000;
+  background:rgba(4,14,22,0.88);
+  align-items:center;justify-content:center;
+}
+.modal-overlay.open{display:flex}
+.modal{
+  background:var(--depth1);
+  border:1px solid var(--mist2);
+  border-radius:4px;
+  width:min(900px, 96vw);
+  max-height:90vh;
+  display:flex;flex-direction:column;
+  overflow:hidden;
+}
+.modal-header{
+  padding:16px 20px;
+  border-bottom:1px solid var(--mist2);
+  display:flex;align-items:center;gap:14px;
+  flex-shrink:0;
+}
+.mh-id{font-family:var(--mono);font-size:16px;font-weight:700;color:var(--foam);letter-spacing:.04em}
+.mh-vessel{font-family:var(--mono);font-size:11px;color:rgba(232,244,246,.42);margin-top:2px}
+.mh-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.mh-close{font-family:var(--mono);font-size:16px;color:rgba(232,244,246,.4);cursor:pointer;padding:4px 8px;border:1px solid var(--mist2);border-radius:2px;transition:all .15s}
+.mh-close:hover{color:var(--foam);border-color:var(--mist2)}
+.modal-meta{
+  padding:12px 20px;
+  background:var(--abyss);
+  border-bottom:1px solid var(--mist2);
+  display:flex;flex-wrap:wrap;gap:18px;flex-shrink:0;
+}
+.mm-item{display:flex;flex-direction:column;gap:2px}
+.mm-lbl{font-family:var(--mono);font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:rgba(232,244,246,.28)}
+.mm-val{font-family:var(--mono);font-size:11px;color:var(--foam2)}
+.modal-body{flex:1;overflow-y:auto;padding:20px}
+
+/* Journey timeline */
+.journey-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.journey-title{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(232,244,246,.28)}
+.journey-range{font-family:var(--mono);font-size:9px;color:rgba(232,244,246,.28)}
+
+/* Chart area */
+.journey-chart{
+  background:var(--abyss);border:1px solid var(--mist2);border-radius:2px;
+  padding:14px 16px;margin-bottom:16px;position:relative;height:180px;
+}
+.jc-canvas{width:100%;height:100%}
+.jc-y-label{position:absolute;left:0;top:0;bottom:0;display:flex;flex-direction:column;justify-content:space-between;pointer-events:none}
+.jc-yl{font-family:var(--mono);font-size:8px;color:rgba(232,244,246,.28);white-space:nowrap}
+.jc-zero{position:absolute;left:0;right:0;border-top:1px dashed rgba(10,147,150,.3)}
+
+/* Journey table */
+.journey-table-wrap{border:1px solid var(--mist2);border-radius:2px;overflow:hidden}
+.jt-head{display:grid;grid-template-columns:130px 90px 80px 80px 110px 80px 1fr;background:var(--abyss);padding:6px 10px;gap:8px}
+.jt-hcell{font-family:var(--mono);font-size:8px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(232,244,246,.26)}
+.jt-row{display:grid;grid-template-columns:130px 90px 80px 80px 110px 80px 1fr;padding:6px 10px;gap:8px;border-top:1px solid var(--mist);transition:background .1s}
+.jt-row:hover{background:var(--mist)}
+.jt-row.latest{background:rgba(10,147,150,.06);border-left:2px solid var(--teal)}
+.jt-cell{font-family:var(--mono);font-size:10px;color:rgba(232,244,246,.5);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.jt-cell.hi{color:var(--foam)}
+.jt-empty{text-align:center;padding:28px;color:rgba(232,244,246,.26);font-family:var(--serif);font-style:italic;font-size:15px}
+
+/* Stage transitions indicator */
+.stage-trail{display:flex;align-items:center;gap:0;flex-wrap:wrap;margin-bottom:14px;gap:6px}
+.st-event{display:flex;align-items:center;gap:5px;background:var(--abyss);border:1px solid var(--mist2);border-radius:2px;padding:4px 9px}
+.st-event-lbl{font-family:var(--mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase}
+.st-event-ts{font-family:var(--mono);font-size:8px;color:rgba(232,244,246,.32);margin-top:1px}
+
+@media(max-width:1200px){.kpi-row{grid-template-columns:repeat(3,1fr)}.btm-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:700px){.kpi-row{grid-template-columns:1fr 1fr}.main{padding:10px}.btm-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-mark">
+      <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+        <path d="M2 13Q10 3 18 13" stroke="#E8F4F6" stroke-width="2" stroke-linecap="round"/>
+        <path d="M3 16Q10 8 17 16" stroke="#E8F4F6" stroke-width="1.5" stroke-linecap="round" opacity=".6"/>
+        <circle cx="10" cy="13" r="2.5" fill="#E8F4F6"/>
+      </svg>
+    </div>
+    <div class="brand-name">Repo<span>Sea</span></div>
+    <div class="brand-sep"></div>
+    <div class="brand-sub">Container Intelligence</div>
+  </div>
+  <nav class="topbar-mid" id="main-nav">
+    <div class="nav-i act" data-page="fleet"    onclick="showPage('fleet')">Fleet</div>
+    <div class="nav-i"     data-page="lanes"    onclick="showPage('lanes')">Lanes</div>
+    <div class="nav-i"     data-page="contracts" onclick="showPage('contracts')">Contracts</div>
+    <div class="nav-i"     data-page="reports"  onclick="showPage('reports')">Reports</div>
+  </nav>
+  <div class="topbar-right">
+    <button class="refresh-btn" id="refresh-btn" onclick="doRefresh()">
+      <svg class="refresh-icon" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+        <path d="M10.5 6A4.5 4.5 0 1 1 8.2 2.2"/>
+        <path d="M8 0.5L8.2 2.2L10 1.8"/>
+      </svg>
+      Refresh
+    </button>
+    <div class="live-badge"><div class="sonar-p"></div>Live · Hourly</div>
+    <div class="run-stamp" id="run-stamp">—</div>
+    <a class="hbtn teal" href="./map.html">Fleet Map</a>
+    <a class="hbtn teal" href="./data/exports/reposea_report.xlsx" download>Excel</a>
+  </div>
+</header>
+
+<div id="page-fleet">
+<!-- Sonar lifecycle track -->
+<div class="sonar-track">
+  <div class="st-stage s-gate" onclick="fStage('GATE_IN')"><div class="st-inner"><div class="st-count" id="sc-GATE_IN">—</div><div class="st-dot"></div><div class="st-lbl">Gate-In</div></div></div>
+  <div class="st-conn"></div>
+  <div class="st-stage s-sea" onclick="fStage('AT_SEA')"><div class="st-inner"><div class="st-count" id="sc-AT_SEA">—</div><div class="st-dot"></div><div class="st-lbl">At Sea</div></div></div>
+  <div class="st-conn"></div>
+  <div class="st-stage s-arrived" onclick="fStage('ARRIVED')"><div class="st-inner"><div class="st-count" id="sc-ARRIVED">—</div><div class="st-dot"></div><div class="st-lbl">Arrived</div></div></div>
+  <div class="st-conn"></div>
+  <div class="st-stage s-free" onclick="fStage('IN_FREE_DAYS')"><div class="st-inner"><div class="st-count" id="sc-IN_FREE_DAYS">—</div><div class="st-dot"></div><div class="st-lbl">Free Days</div></div></div>
+  <div class="st-conn"></div>
+  <div class="st-stage s-overdue" onclick="fStage('OVERDUE')"><div class="st-inner"><div class="st-count" id="sc-OVERDUE">—</div><div class="st-dot"></div><div class="st-lbl">Overdue</div></div></div>
+  <div class="st-tail">→ complete → replaced</div>
+</div>
+
+<div class="main">
+  <div class="fml-strip">
+    <div class="fml-eq">Buffer = Contract_LFD − NOW</div>
+    <div class="fml-div"></div>
+    <div class="fml-rules">Buffer &lt; 0 → Critical (per_diem × |days|) &nbsp;·&nbsp; 0–2d → Warning &nbsp;·&nbsp; &gt;2d → Safe</div>
+    <div style="margin-left:auto;font-family:var(--mono);font-size:9px;color:rgba(232,244,246,.26)" id="last-refresh-ts">—</div>
+  </div>
+
+  <div class="kpi-row" id="kpi-row"></div>
+
+  <div class="controls">
+    <div class="clbl">Lane</div>
+    <div class="seg-grp" id="lane-segs">
+      <button class="seg act" data-lane="ALL">All</button>
+      <button class="seg" data-lane="TRANS_PAC">Trans-Pacific</button>
+      <button class="seg" data-lane="TRANS_ATL">Trans-Atlantic</button>
+      <button class="seg" data-lane="ASIA_EUR">Asia-Europe</button>
+      <button class="seg" data-lane="INTRA_ASIA">Intra-Asia</button>
+    </div>
+    <div class="clbl">Lease</div>
+    <select class="fsel" id="f-lease"><option value="ALL">All Leases</option><option value="One-Way">One-Way</option><option value="Master Lease">Master Lease</option><option value="Long-Term">Long-Term</option></select>
+    <div class="clbl">Status</div>
+    <select class="fsel" id="f-status"><option value="ALL">All Status</option><option value="Critical">Critical</option><option value="Warning">Warning</option><option value="Safe">Safe</option></select>
+    <div class="clbl">Stage</div>
+    <select class="fsel" id="f-stage"><option value="ALL">All Stages</option><option value="GATE_IN">Gate-In</option><option value="AT_SEA">At Sea</option><option value="ARRIVED">Arrived</option><option value="IN_FREE_DAYS">Free Days</option><option value="OVERDUE">Overdue</option></select>
+    <input class="sbox" id="sbox" placeholder="Vessel or container..."/>
+    <div class="spacer"></div>
+    <div class="rcount" id="rcount"></div>
+  </div>
+
+  <div class="tbl-wrap">
+    <div class="tbl-scroll">
+      <table>
+        <thead><tr>
+          <th data-col="container_id">Container<span class="si">↕</span></th>
+          <th data-col="lease_type">Lease<span class="si">↕</span></th>
+          <th data-col="trade_lane">Lane<span class="si">↕</span></th>
+          <th data-col="lifecycle_stage">Stage<span class="si">↕</span></th>
+          <th data-col="vessel_name">Vessel<span class="si">↕</span></th>
+          <th data-col="current_loc">Location<span class="si">↕</span></th>
+          <th data-col="origin_locode">Origin<span class="si">↕</span></th>
+          <th data-col="dest_locode">Dest<span class="si">↕</span></th>
+          <th>Voyage Depth</th>
+          <th data-col="days_to_lfd">Buffer<span class="si">↕</span></th>
+          <th data-col="burn_rate_usd">Exposure<span class="si">↕</span></th>
+          <th data-col="projected_exposure_7d_usd">7-Day Forecast<span class="si">↕</span></th>
+          <th data-col="action_status">Status<span class="si">↕</span></th>
+          <th data-col="priority_score">Score<span class="si">↕</span></th>
+          <th>Journey</th>
+        </tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+    <div class="empty" id="empty" style="display:none">No containers match current filters</div>
+  </div>
+
+  <div class="btm-grid">
+    <div class="panel"><div class="panel-title">Depth exposure — penalty by trade lane</div><div class="sonar-bars" id="sonar-bars"></div><div class="sonar-labels" id="sonar-labels"></div></div>
+    <div class="panel"><div class="panel-title">Fleet lifecycle — voyage distribution</div><div id="stage-mix"></div></div>
+    <div class="panel"><div class="panel-title">Action priority</div><div id="priority"></div></div>
+  </div>
+
+  <div class="sig-strip"><div class="sig-lbl">Signal</div><div class="sig-scroll" id="signal"></div></div>
+</div>
+
+</div><!-- /page-fleet -->
+
+<!-- ════════════════════════════════════════════════
+     JOURNEY MODAL
+     ════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <div>
+        <div class="mh-id" id="m-id">—</div>
+        <div class="mh-vessel" id="m-vessel">—</div>
+      </div>
+      <div class="mh-right">
+        <div id="m-status"></div>
+        <button class="mh-close" onclick="closeModal()">✕ Close</button>
+      </div>
+    </div>
+    <div class="modal-meta" id="modal-meta"></div>
+    <div class="modal-body">
+      <div class="journey-header">
+        <div class="journey-title">Journey History — Last 30 Days</div>
+        <div class="journey-range" id="m-range">—</div>
+      </div>
+      <div class="stage-trail" id="stage-trail"></div>
+      <div class="journey-chart">
+        <canvas id="jc-canvas"></canvas>
+      </div>
+      <div class="journey-table-wrap">
+        <div class="jt-head">
+          <div class="jt-hcell">Timestamp</div>
+          <div class="jt-hcell">Stage</div>
+          <div class="jt-hcell">Buffer (d)</div>
+          <div class="jt-hcell">Status</div>
+          <div class="jt-hcell">Exposure USD</div>
+          <div class="jt-hcell">Voyage %</div>
+          <div class="jt-hcell">Location</div>
+        </div>
+        <div id="journey-rows"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let D=[],H={},S={},prevIds=new Set();
+let aLane='ALL',aLease='ALL',aStat='ALL',aStg='ALL',sQ='',sCol='priority_score',sDir=-1;
+const LL={TRANS_PAC:'Trans-Pacific',TRANS_ATL:'Trans-Atlantic',ASIA_EUR:'Asia-Europe',INTRA_ASIA:'Intra-Asia'};
+const SL={GATE_IN:'Gate-In',AT_SEA:'At Sea',ARRIVED:'Arrived',IN_FREE_DAYS:'Free Days',OVERDUE:'Overdue',COMPLETE:'Done'};
+const SO=['GATE_IN','AT_SEA','ARRIVED','IN_FREE_DAYS','OVERDUE','COMPLETE'];
+const STAGE_COL={GATE_IN:'rgba(196,224,229,.7)',AT_SEA:'#0A9396',ARRIVED:'#64C8CC',IN_FREE_DAYS:'#D4A030',OVERDUE:'#E05252'};
+const STATUS_COL={Critical:'#E05252',Warning:'#D4A030',Safe:'#0A9396'};
+
+// ── Refresh ────────────────────────────────────────────────────────────────
+let isRefreshing=false;
+async function doRefresh(){
+  if(isRefreshing)return;
+  isRefreshing=true;
+  const btn=document.getElementById('refresh-btn');
+  btn.classList.add('spinning');
+  btn.querySelector('span')&&(btn.querySelectorAll('span')[0].textContent='Refreshing...');
+  document.querySelectorAll('.kpi').forEach(k=>k.classList.add('refreshing'));
+
+  try{
+    await loadData(true);
+  } finally {
+    isRefreshing=false;
+    btn.classList.remove('spinning');
+    btn.classList.add('done');
+    document.querySelectorAll('.kpi').forEach(k=>k.classList.remove('refreshing'));
+    const now=new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    document.getElementById('last-refresh-ts').textContent='Refreshed at '+now;
+    setTimeout(()=>btn.classList.remove('done'),3000);
+  }
+}
+
+async function loadData(highlight=false){
+  try{
+    const[dr,sr,hr]=await Promise.all([
+      fetch('./data/gold/containers.json?t='+Date.now()),
+      fetch('./data/gold/summary.json?t='+Date.now()),
+      fetch('./data/gold/history.json?t='+Date.now()),
+    ]);
+    if(!dr.ok)throw new Error(dr.status);
+    const newD=await dr.json();
+    if(highlight){
+      const newIds=new Set(newD.map(r=>r.container_id));
+      // Mark truly new containers (weren't in previous dataset)
+      newD.forEach(r=>{ if(!prevIds.has(r.container_id)) r._isNew=true; });
+      prevIds=newIds;
+    }
+    D=newD;
+    S=await sr.json();
+    try{ const hd=await hr.json(); H=hd.snapshots||{}; }catch(e){ H={}; }
+    const ts=(S.generated_at||'').slice(0,16).replace('T',' ');
+    document.getElementById('run-stamp').textContent='Run #'+(S.run_count||'?')+' · '+ts+' UTC';
+  }catch(e){
+    D=FB; S={run_count:'demo'}; H={};
+    document.getElementById('run-stamp').textContent='Offline · sample';
+  }
+  renderAll();
+}
+
+function renderAll(){rTrack();rKPIs();rTable();rSonarBars();rStageMix();rPriority();rSignal();}
+
+function filtered(){
+  return D.filter(d=>{
+    if(aLane!=='ALL'&&d.trade_lane!==aLane)return false;
+    if(aLease!=='ALL'&&d.lease_type!==aLease)return false;
+    if(aStat!=='ALL'&&d.action_status!==aStat)return false;
+    if(aStg!=='ALL'&&d.lifecycle_stage!==aStg)return false;
+    if(sQ){const q=sQ.toLowerCase();if(!String(d.container_id||'').toLowerCase().includes(q)&&!String(d.vessel_name||'').toLowerCase().includes(q)&&!String(d.current_loc||'').toLowerCase().includes(q))return false;}
+    return true;
+  }).sort((a,b)=>{let av=a[sCol],bv=b[sCol];if(typeof av==='string')return sDir*av.localeCompare(bv);return sDir*((+av||0)-(+bv||0));});
+}
+
+function rTrack(){['GATE_IN','AT_SEA','ARRIVED','IN_FREE_DAYS','OVERDUE'].forEach(s=>{const e=document.getElementById('sc-'+s);if(e)e.textContent=D.filter(d=>d.lifecycle_stage===s).length;});}
+
+function rKPIs(){
+  const crit=D.filter(d=>d.action_status==='Critical').length,warn=D.filter(d=>d.action_status==='Warning').length,safe=D.filter(d=>d.action_status==='Safe').length;
+  const pen=D.filter(d=>d.days_to_lfd<=0).reduce((s,d)=>s+Number(d.burn_rate_usd||0),0);
+  const avg=D.length?(D.reduce((s,d)=>s+Number(d.days_to_lfd||0),0)/D.length).toFixed(1):'0';
+  const proj7d = D.reduce((s,d)=>s+Number(d.projected_exposure_7d_usd||0),0);
+  const k=[
+    {l:'Critical',v:crit,c:'red',s:'past LFD',t:crit/Math.max(D.length,1)*100},
+    {l:'Warning',v:warn,c:'amber',s:'≤ 2 days buffer',t:warn/Math.max(D.length,1)*100},
+    {l:'Safe',v:safe,c:'teal',s:'buffer > 2 days',t:safe/Math.max(D.length,1)*100},
+    {l:'Penalty USD',v:'$'+Math.round(pen).toLocaleString(),c:'',s:'accrued today',t:Math.min(100,pen/50000*100)},
+    {l:'7-Day Forecast',v:'$'+Math.round(proj7d).toLocaleString(),c:'red',s:'projected exposure',t:Math.min(100,proj7d/100000*100)},
+    {l:'Pipeline Runs',v:S.run_count||'—',c:'',s:'since deploy',t:50},
+  ];
+  document.getElementById('kpi-row').innerHTML=k.map(i=>`<div class="kpi"><div class="kpi-tide" style="height:${i.t.toFixed(1)}%"></div><div class="kpi-lbl">${i.l}</div><div class="kpi-val ${i.c}">${i.v}</div><div class="kpi-sub">${i.s}</div></div>`).join('');
+}
+
+function stgB(s){return`<span class="stg stg-${s||'GATE_IN'}"><span class="stg-dot"></span>${SL[s]||s}</span>`;}
+function stsB(s){const c=s==='Critical'?'c':s==='Warning'?'w':'s';return`<span class="sts sts-${c}"><span class="sts-dot"></span>${s}</span>`;}
+function ltC(t){return t==='One-Way'?'ow':t==='Master Lease'?'ml':'lt';}
+function vDep(d){const i=SO.indexOf(d.lifecycle_stage||'GATE_IN'),p=Math.min(100,Math.round(i/(SO.length-2)*100)),col=p>=80?'var(--alert)':p>=60?'var(--warn)':'var(--teal)';return`<div class="vdepth"><div class="vd-track"><div class="vd-fill" style="width:${p}%;background:${col}"></div></div><div class="vd-pct">${p}%</div></div>`;}
+function bufB(v){const n=Number(v||0),cl=Math.min(Math.max(n,-20),30),p=((cl+20)/50*100).toFixed(1),col=n>2?'var(--teal)':n<=0?'var(--alert)':'var(--warn)';return`<div class="bufbar"><div class="bb-track"><div class="bb-fill" style="width:${p}%;background:${col}"></div></div><span style="font-family:var(--mono);font-size:10px;color:${col}">${n>=0?'+':''}${Number(n).toFixed(1)}</span></div>`;}
+function burnD(d){if(Number(d.days_to_lfd||0)<=0&&Number(d.burn_rate_usd||0)>0)return`<span class="burn-r">$${Number(d.burn_rate_usd).toLocaleString(undefined,{maximumFractionDigits:0})} accrued</span>`;return`<span class="burn-d">$${Number(d.per_diem_rate||0).toFixed(0)}/day</span>`;}
+function histBtn(cid){const n=H[cid]?H[cid].length:0;return`<button class="history-btn" onclick="openJourney('${cid}',event)">${n>0?n+' runs':'—'}</button>`;}
+
+function rTable(){
+  const rows=filtered();
+  document.getElementById('empty').style.display=rows.length?'none':'block';
+  document.getElementById('rcount').textContent=rows.length+' / '+D.length;
+  document.getElementById('tbody').innerHTML=rows.map(d=>`<tr class="${d._isNew?'row-new':''}" onclick="openJourney('${d.container_id}')">
+    <td class="td-id">${d.container_id||'—'}</td>
+    <td><span class="ltag ${ltC(d.lease_type)}">${d.lease_type||'—'}</span></td>
+    <td><span style="font-size:8px;color:rgba(232,244,246,.28);font-family:var(--mono)">${LL[d.trade_lane]||d.trade_lane||'—'}</span></td>
+    <td>${stgB(d.lifecycle_stage)}</td>
+    <td style="max-width:155px;overflow:hidden;text-overflow:ellipsis;color:var(--foam2)">${d.vessel_name||'—'}</td>
+    <td><span class="loctag">${d.current_loc||'—'}</span></td>
+    <td><span class="loctag">${d.origin_locode||'—'}</span></td>
+    <td><span class="loctag">${d.dest_locode||'—'}</span></td>
+    <td>${vDep(d)}</td>
+    <td>${bufB(d.days_to_lfd)}</td>
+    <td>${burnD(d)}</td>
+    <td>${forecastCell(d)}</td>
+    <td>${stsB(d.action_status||'Safe')}</td>
+    <td><span style="font-family:var(--mono);font-size:10px;font-weight:700;color:${scoreColor(d.priority_score)}">${d.priority_score||1}</span></td>
+    <td>${histBtn(d.container_id)}</td>
+  </tr>`).join('');
+}
+
+function rSonarBars(){
+  const lanes=['TRANS_PAC','TRANS_ATL','ASIA_EUR','INTRA_ASIA'],sh={TRANS_PAC:'T-PAC',TRANS_ATL:'T-ATL',ASIA_EUR:'ASIA-EU',INTRA_ASIA:'INTRA'};
+  const stats=lanes.map(l=>{const ld=D.filter(d=>d.trade_lane===l);return{s:sh[l],burn:ld.filter(d=>d.days_to_lfd<=0).reduce((a,d)=>a+Number(d.burn_rate_usd||0),0)};});
+  const mx=Math.max(...stats.map(s=>s.burn),1);
+  document.getElementById('sonar-bars').innerHTML=stats.map(s=>{const h=Math.max(4,Math.round(s.burn/mx*100)),cls=s.burn>5000?'danger':s.burn>1000?'caution':'active';return`<div class="sb-col"><div class="sb-val">${s.burn>0?'$'+Math.round(s.burn/1000)+'k':'—'}</div><div class="sb-bar ${cls}" style="height:${h}%"></div></div>`;}).join('');
+  document.getElementById('sonar-labels').innerHTML=stats.map(s=>`<div class="sb-col"><div class="sb-lbl">${s.s}</div></div>`).join('');
+}
+
+function rStageMix(){
+  const stages=[{k:'GATE_IN',l:'Gate-In',c:'var(--foam2)'},{k:'AT_SEA',l:'At Sea',c:'var(--teal)'},{k:'ARRIVED',l:'Arrived',c:'#64C8CC'},{k:'IN_FREE_DAYS',l:'Free Days',c:'var(--warn)'},{k:'OVERDUE',l:'Overdue',c:'var(--alert)'}];
+  const total=D.length||1,ic={GATE_IN:'⚓',AT_SEA:'〜',ARRIVED:'▣',IN_FREE_DAYS:'◈',OVERDUE:'●'};
+  document.getElementById('stage-mix').innerHTML=stages.map(s=>{const n=D.filter(d=>d.lifecycle_stage===s.k).length,p=Math.round(n/total*100);return`<div class="smr"><div class="smr-ico" style="color:${s.c}">${ic[s.k]}</div><div class="smr-lbl">${s.l}</div><div class="smr-track"><div class="smr-fill" style="width:${p}%;background:${s.c}"></div></div><div class="smr-n">${n}</div></div>`;}).join('');
+}
+
+function rPriority(){
+  const h=D.filter(d=>d.action_status==='Critical'&&d.lease_type==='One-Way').length,m=D.filter(d=>d.lease_type==='Master Lease').length,lo=D.filter(d=>d.lease_type==='Long-Term').length;
+  document.getElementById('priority').innerHTML=`
+    <div class="pri-item"><div class="pri-n" style="color:var(--alert)">01</div><div class="pri-body"><div class="pri-name" style="color:var(--alert)">High — one-way</div><div class="pri-desc">Past free time · penalty accruing</div></div><div class="pri-c" style="color:var(--alert)">${h}</div></div>
+    <div class="pri-item"><div class="pri-n" style="color:var(--warn)">02</div><div class="pri-body"><div class="pri-name" style="color:var(--warn)">Medium — master lease</div><div class="pri-desc">Idle at depot · daily rent active</div></div><div class="pri-c" style="color:var(--warn)">${m}</div></div>
+    <div class="pri-item"><div class="pri-n" style="color:var(--teal)">03</div><div class="pri-body"><div class="pri-name" style="color:var(--teal)">Low — long-term</div><div class="pri-desc">Monitor only · no cost yet</div></div><div class="pri-c" style="color:var(--teal)">${lo}</div></div>`;
+}
+
+function rSignal(){
+  const items=[
+    ...D.filter(d=>d.action_status==='Critical').slice(0,5).map(d=>`<div class="sgi sgi-r">● ${d.container_id} · ${Number(d.days_to_lfd||0).toFixed(1)}d overdue · $${Number(d.burn_rate_usd||0).toLocaleString(undefined,{maximumFractionDigits:0})}</div>`),
+    ...D.filter(d=>d.action_status==='Warning').slice(0,4).map(d=>`<div class="sgi sgi-w">◈ ${d.container_id} · ${Number(d.days_to_lfd||0).toFixed(1)}d remaining</div>`),
+    ...D.filter(d=>d.lifecycle_stage==='AT_SEA').slice(0,6).map(d=>`<div class="sgi sgi-t">〜 ${d.container_id} · ${d.vessel_name||''} · ${d.origin_locode}→${d.dest_locode}</div>`),
+    ...D.filter(d=>d.lifecycle_stage==='GATE_IN').slice(0,3).map(d=>`<div class="sgi sgi-g">⚓ ${d.container_id} · gating in at ${d.origin_locode}</div>`),
+  ];
+  document.getElementById('signal').innerHTML=items.length?items.join(''):'<div class="sgi sgi-t">All containers nominal</div>';
+}
+
+function fStage(s){aStg=aStg===s?'ALL':s;document.getElementById('f-stage').value=aStg;rTable();}
+
+// ── JOURNEY MODAL ───────────────────────────────────────────────────────────
+function openJourney(cid, evt){
+  if(evt) evt.stopPropagation();
+  const container = D.find(d=>d.container_id===cid);
+  if(!container) return;
+  const snaps = (H[cid]||[]).slice().reverse(); // newest first for table
+
+  // Header
+  document.getElementById('m-id').textContent = cid;
+  // Assigned vessel = the vessel used during GATE_IN/AT_SEA legs
+  // Once arrived and berthed, the vessel is released — show port instead
+  const allSnaps = H[cid] || [];
+  const seaSnap  = allSnaps.find(s => ['GATE_IN','AT_SEA'].includes(s.stage));
+  const assignedVesselName = seaSnap ? seaSnap.vessel : (container.vessel_name || '');
+  const currentlyAtSea = ['GATE_IN','AT_SEA'].includes(container.lifecycle_stage);
+  document.getElementById('m-vessel').textContent = assignedVesselName
+    ? (currentlyAtSea ? assignedVesselName : assignedVesselName + ' (berthed)')
+    : (container.current_loc || '—');
+  document.getElementById('m-status').innerHTML = `<span class="sts sts-${container.action_status==='Critical'?'c':container.action_status==='Warning'?'w':'s'}"><span class="sts-dot"></span>${container.action_status}</span>`;
+
+  // Meta strip
+  // Vessel is locked at birth — read from first history snapshot or current data
+  // vessel resolved below
+  const meta = [
+    {l:'Route',           v: (container.origin_locode||'?') + ' → ' + (container.dest_locode||'?')},
+    {l:'Trade Lane',      v: LL[container.trade_lane]||container.trade_lane||'—'},
+    {l:'Lease Type',      v: container.lease_type||'—'},
+    {l: currentlyAtSea ? 'Vessel (underway)' : 'Last Vessel (berthed)',
+       v: assignedVesselName || '—'},
+    {l:'Current Stage',   v: SL[container.lifecycle_stage]||container.lifecycle_stage||'—'},
+    {l:'Buffer',          v: (Number(container.days_to_lfd||0)>=0?'+':'')+Number(container.days_to_lfd||0).toFixed(1)+' days'},
+    {l:'Per Diem',        v: '$'+(container.per_diem_rate||0)+'/day'},
+    {l:'Free Days',       v: (container.agreed_free_days||0)+' days'},
+    {l:'History Runs',    v: (H[cid]||[]).length+' snapshots'},
+  ];
+  document.getElementById('modal-meta').innerHTML = meta.map(m=>`<div class="mm-item"><div class="mm-lbl">${m.l}</div><div class="mm-val">${m.v}</div></div>`).join('');
+
+  // Range
+  const allSnaps = H[cid]||[];
+  if(allSnaps.length>0){
+    document.getElementById('m-range').textContent = allSnaps[0].ts.slice(0,16) + ' → ' + allSnaps[allSnaps.length-1].ts.slice(0,16);
+  } else {
+    document.getElementById('m-range').textContent = 'No history yet';
+  }
+
+  // Stage trail (show lifecycle transitions)
+  const transitions = [];
+  let lastStage = null;
+  allSnaps.forEach(s=>{
+    if(s.stage !== lastStage){
+      transitions.push({stage:s.stage, ts:s.ts});
+      lastStage = s.stage;
+    }
+  });
+  const trailCols = {GATE_IN:'rgba(196,224,229,.7)',AT_SEA:'#0A9396',ARRIVED:'#64C8CC',IN_FREE_DAYS:'#D4A030',OVERDUE:'#E05252'};
+  document.getElementById('stage-trail').innerHTML = transitions.length > 0
+    ? transitions.map((t,i)=>`
+        <div class="st-event">
+          <div class="stg-dot" style="background:${trailCols[t.stage]||'#666'};width:6px;height:6px;border-radius:50%;flex-shrink:0"></div>
+          <div>
+            <div class="st-event-lbl" style="color:${trailCols[t.stage]||'rgba(232,244,246,.5)'}">${SL[t.stage]||t.stage}</div>
+            <div class="st-event-ts">${t.ts.slice(0,16)}</div>
+          </div>
+          ${i<transitions.length-1?'<span style="color:rgba(232,244,246,.2);font-size:10px;margin-left:2px">→</span>':''}
+        </div>`).join('')
+    : '<div style="font-family:var(--mono);font-size:10px;color:rgba(232,244,246,.28)">No stage transitions recorded yet</div>';
+
+  // Buffer/burn chart
+  drawJourneyChart(allSnaps);
+
+  // Journey table rows
+  if(snaps.length===0){
+    document.getElementById('journey-rows').innerHTML = '<div class="jt-empty">No historical data yet. Runs accumulate each hour.</div>';
+  } else {
+    document.getElementById('journey-rows').innerHTML = snaps.map((s,i)=>{
+      const dtl=Number(s.dtl||0);
+      const dtlCol=dtl>2?'var(--teal)':dtl<=0?'var(--alert)':'var(--warn)';
+      const stsC=s.status==='Critical'?'c':s.status==='Warning'?'w':'s';
+      const isLatest = i===0;
+      return `<div class="jt-row${isLatest?' latest':''}">
+        <div class="jt-cell hi">${s.ts.slice(0,16)}</div>
+        <div class="jt-cell"><span class="stg stg-${s.stage||'GATE_IN'}"><span class="stg-dot"></span>${SL[s.stage]||s.stage}</span></div>
+        <div class="jt-cell" style="color:${dtlCol}">${dtl>=0?'+':''}${dtl.toFixed(1)}</div>
+        <div class="jt-cell"><span class="sts sts-${stsC}"><span class="sts-dot"></span>${s.status}</span></div>
+        <div class="jt-cell" style="color:${s.burn>0?'var(--alert)':'rgba(232,244,246,.4)'}">
+          ${s.burn>0?'$'+Math.round(s.burn).toLocaleString():'—'}
+        </div>
+        <div class="jt-cell">${s.pct}%</div>
+        <div class="jt-cell" style="overflow:hidden;text-overflow:ellipsis;color:${['GATE_IN','AT_SEA'].includes(s.stage)?'var(--teal)':'rgba(232,244,246,.45)'}">
+          ${['GATE_IN','AT_SEA'].includes(s.stage)?(s.vessel||s.loc||'—'):(s.loc||'—')}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function drawJourneyChart(snaps){
+  const canvas = document.getElementById('jc-canvas');
+  const parent = canvas.parentElement;
+  canvas.width  = parent.clientWidth - 32;
+  canvas.height = parent.clientHeight - 28;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  if(snaps.length < 2){ return; }
+
+  const W=canvas.width, H=canvas.height;
+  const dtls = snaps.map(s=>Number(s.dtl||0));
+  const burns = snaps.map(s=>Number(s.burn||0));
+  const minDtl=Math.min(...dtls,-5), maxDtl=Math.max(...dtls,5);
+  const maxBurn=Math.max(...burns,1);
+  const n=snaps.length;
+
+  // Grid lines
+  ctx.strokeStyle='rgba(232,244,246,0.06)';ctx.lineWidth=0.5;
+  for(let i=0;i<=4;i++){
+    const y=H*i/4;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();
+  }
+
+  // Zero line for buffer
+  const zeroY = H - H*(0-minDtl)/(maxDtl-minDtl);
+  ctx.strokeStyle='rgba(10,147,150,0.3)';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(0,zeroY);ctx.lineTo(W,zeroY);ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Burn rate area (secondary, muted)
+  if(maxBurn>0){
+    ctx.fillStyle='rgba(224,82,82,0.08)';
+    ctx.beginPath();ctx.moveTo(0,H);
+    snaps.forEach((s,i)=>{
+      const x=W*i/(n-1), y=H-H*(Number(s.burn||0)/maxBurn)*0.4;
+      ctx.lineTo(x,y);
+    });
+    ctx.lineTo(W,H);ctx.closePath();ctx.fill();
+  }
+
+  // Buffer line
+  ctx.lineWidth=1.5;
+  ctx.beginPath();
+  snaps.forEach((s,i)=>{
+    const x=W*i/(n-1);
+    const y=H-H*(Number(s.dtl||0)-minDtl)/(maxDtl-minDtl);
+    const col=Number(s.dtl||0)>2?'#0A9396':Number(s.dtl||0)<=0?'#E05252':'#D4A030';
+    if(i===0){ctx.moveTo(x,y);}else{
+      const prevX=W*(i-1)/(n-1);
+      const prevY=H-H*(Number(snaps[i-1].dtl||0)-minDtl)/(maxDtl-minDtl);
+      ctx.strokeStyle=col;ctx.stroke();ctx.beginPath();ctx.moveTo(prevX,prevY);ctx.lineTo(x,y);
+    }
+  });
+  ctx.stroke();
+
+  // Status dots
+  snaps.forEach((s,i)=>{
+    const x=W*i/(n-1);
+    const y=H-H*(Number(s.dtl||0)-minDtl)/(maxDtl-minDtl);
+    const col=s.status==='Critical'?'#E05252':s.status==='Warning'?'#D4A030':'#0A9396';
+    ctx.fillStyle=col;
+    ctx.beginPath();ctx.arc(x,y,2.5,0,Math.PI*2);ctx.fill();
+  });
+
+  // Labels
+  ctx.fillStyle='rgba(232,244,246,0.28)';ctx.font='8px JetBrains Mono, monospace';
+  ctx.fillText(maxDtl.toFixed(0)+'d',4,12);
+  ctx.fillText(minDtl.toFixed(0)+'d',4,H-4);
+  ctx.fillText('buffer',4,H/2-4);
+}
+
+function closeModal(evt){
+  if(evt&&evt.target!==document.getElementById('modal-overlay'))return;
+  document.getElementById('modal-overlay').classList.remove('open');
+}
+
+// Sort
+document.querySelectorAll('thead th[data-col]').forEach(th=>{
+  th.addEventListener('click',()=>{const c=th.dataset.col;sCol===c?sDir*=-1:(sCol=c,sDir=1);document.querySelectorAll('thead th').forEach(t=>t.classList.remove('sorted'));th.classList.add('sorted');document.querySelectorAll('.si').forEach(i=>i.textContent='↕');th.querySelector('.si').textContent=sDir===1?'↑':'↓';rTable();});
+});
+document.getElementById('lane-segs').addEventListener('click',e=>{if(!e.target.dataset.lane)return;aLane=e.target.dataset.lane;document.querySelectorAll('#lane-segs .seg').forEach(s=>s.classList.remove('act'));e.target.classList.add('act');rTable();});
+document.getElementById('f-lease').addEventListener('change',e=>{aLease=e.target.value;rTable();});
+document.getElementById('f-status').addEventListener('change',e=>{aStat=e.target.value;rTable();});
+document.getElementById('f-stage').addEventListener('change',e=>{aStg=e.target.value;rTable();});
+document.getElementById('sbox').addEventListener('input',e=>{sQ=e.target.value;rTable();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+
+function forecastCell(d){
+  const proj = Number(d.projected_exposure_7d_usd||0);
+  const strat = d.repo_strategy||'';
+  if(proj <= 0 && !strat) return '<span class="burn-d">—</span>';
+  const stratShort = strat==='One-Way Lease Match'?'Lease Match':
+                     strat==='Reposition Empty'?'Empty Move':
+                     strat==='URGENT — Clear Terminal'?'⚠ URGENT':
+                     strat==='Await Local Demand'?'Await Demand':
+                     strat==='N/A — In Transit'?'In Transit':'—';
+  const projStr = proj > 0 ? '<span style="font-family:var(--mono);font-size:9px;color:var(--alert)">$'+Math.round(proj).toLocaleString()+'</span>' : '';
+  const stratCol = strat==='One-Way Lease Match'?'#4AAF8A':strat==='URGENT — Clear Terminal'?'var(--alert)':'rgba(232,244,246,.4)';
+  const stratStr = '<span style="font-family:var(--mono);font-size:8px;color:'+stratCol+'">'+stratShort+'</span>';
+  return proj > 0 ? projStr+'<br>'+stratStr : stratStr;
+}
+
+function scoreColor(score){
+  const s=Number(score||1);
+  if(s>=9) return 'var(--alert)';
+  if(s>=7) return 'var(--warn)';
+  if(s>=5) return '#C4E0E5';
+  return 'rgba(232,244,246,.3)';
+}
+
+const FB=[
+  {container_id:'MSKU9082341',lease_type:'One-Way',trade_lane:'TRANS_PAC',lifecycle_stage:'AT_SEA',vessel_name:'Maersk Antares',current_loc:'At Sea (Maersk Antares)',origin_locode:'CNSHA',dest_locode:'USLAX',days_to_lfd:-3.2,per_diem_rate:150,burn_rate_usd:480,action_status:'Critical',priority_score:9,projected_exposure_7d_usd:1530,repo_strategy:'URGENT — Clear Terminal',agreed_free_days:10,voyage_pct:55},
+  {container_id:'TCKU3041892',lease_type:'One-Way',trade_lane:'TRANS_ATL',lifecycle_stage:'IN_FREE_DAYS',vessel_name:'MSC Eloane',current_loc:'USNYC',origin_locode:'NLRTM',dest_locode:'USNYC',days_to_lfd:1.5,per_diem_rate:130,burn_rate_usd:130,action_status:'Warning',priority_score:310,agreed_free_days:10,voyage_pct:91},
+  {container_id:'CMAU4719230',lease_type:'Master Lease',trade_lane:'ASIA_EUR',lifecycle_stage:'AT_SEA',vessel_name:'OOCL Hong Kong',current_loc:'At Sea',origin_locode:'CNSHA',dest_locode:'NLRTM',days_to_lfd:8.4,per_diem_rate:85,burn_rate_usd:85,action_status:'Safe',priority_score:96,agreed_free_days:14,voyage_pct:45},
+  {container_id:'HLXU2834019',lease_type:'Long-Term',trade_lane:'INTRA_ASIA',lifecycle_stage:'GATE_IN',vessel_name:'Wan Hai 307',current_loc:'TWKHH',origin_locode:'TWKHH',dest_locode:'SGSIN',days_to_lfd:22.1,per_diem_rate:40,burn_rate_usd:40,action_status:'Safe',priority_score:10,agreed_free_days:21,voyage_pct:5},
+  {container_id:'SUDU4820931',lease_type:'One-Way',trade_lane:'TRANS_ATL',lifecycle_stage:'OVERDUE',vessel_name:'MSC Eloane',current_loc:'USNYC',origin_locode:'NLRTM',dest_locode:'USNYC',days_to_lfd:-6.5,per_diem_rate:130,burn_rate_usd:845,action_status:'Critical',priority_score:650,agreed_free_days:10,voyage_pct:96},
+];
+
+loadData();
+setInterval(()=>loadData(true), 5*60*1000);
+</script>
+
+<!-- ════════════════════════════════════════════════
+     LANES PAGE
+     ════════════════════════════════════════════════ -->
+<div id="page-lanes" style="display:none">
+  <div class="main">
+    <div class="fml-strip">
+      <div class="fml-eq">Trade Lane Intelligence — Exposure, Volume & Penalty by Route</div>
+      <div class="fml-div"></div>
+      <div class="fml-rules">Four global trade lanes · containers tracked per voyage leg</div>
+    </div>
+
+    <div id="lanes-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px"></div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+      <div class="panel">
+        <div class="panel-title">Penalty distribution — all lanes</div>
+        <div id="lane-penalty-bars"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">Stage mix — containers per lane</div>
+        <div id="lane-stage-mix"></div>
+      </div>
+    </div>
+
+    <div class="tbl-wrap">
+      <div class="tbl-scroll">
+        <table>
+          <thead><tr>
+            <th>Container</th><th>Lease</th><th>Trade Lane</th><th>Stage</th>
+            <th>Vessel</th><th>Origin</th><th>Dest</th>
+            <th>Buffer</th><th>Exposure</th><th>Status</th>
+          </tr></thead>
+          <tbody id="lanes-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════
+     CONTRACTS PAGE
+     ════════════════════════════════════════════════ -->
+<div id="page-contracts" style="display:none">
+  <div class="main">
+    <div class="fml-strip">
+      <div class="fml-eq">Contract Master — Lease Terms, Free Days & Per-Diem Rates</div>
+      <div class="fml-div"></div>
+      <div class="fml-rules">One-Way · Master Lease · Long-Term &nbsp;·&nbsp; Rate driven by Freightos FBX market index</div>
+    </div>
+
+    <div id="contracts-kpis" style="display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin-bottom:14px"></div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px">
+      <div class="panel">
+        <div class="panel-title">Lease type distribution</div>
+        <div id="contract-lease-bars"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">Per-diem rate ranges</div>
+        <div id="contract-rate-ranges"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">Free days by lease type</div>
+        <div id="contract-freedays"></div>
+      </div>
+    </div>
+
+    <div class="controls" style="margin-bottom:10px">
+      <div class="clbl">Lease Type</div>
+      <div class="seg-grp" id="contract-lease-segs">
+        <button class="seg act" data-val="ALL">All</button>
+        <button class="seg" data-val="One-Way">One-Way</button>
+        <button class="seg" data-val="Master Lease">Master Lease</button>
+        <button class="seg" data-val="Long-Term">Long-Term</button>
+      </div>
+      <div class="clbl">Status</div>
+      <select class="fsel" id="contract-status-f">
+        <option value="ALL">All Status</option>
+        <option value="Critical">Critical</option>
+        <option value="Warning">Warning</option>
+        <option value="Safe">Safe</option>
+      </select>
+      <div class="spacer"></div>
+      <div class="rcount" id="contract-rcount"></div>
+    </div>
+
+    <div class="tbl-wrap">
+      <div class="tbl-scroll">
+        <table>
+          <thead><tr>
+            <th>Contract ID</th><th>Container</th><th>Lease Type</th><th>Trade Lane</th>
+            <th>Origin</th><th>Dest</th><th>Free Days</th>
+            <th>Per-Diem</th><th>LFD</th><th>Buffer</th><th>Penalty USD</th><th>Status</th>
+          </tr></thead>
+          <tbody id="contracts-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════
+     REPORTS PAGE
+     ════════════════════════════════════════════════ -->
+<div id="page-reports" style="display:none">
+  <div class="main">
+    <div class="fml-strip">
+      <div class="fml-eq">Operations Report — Fleet Summary, Risk Exposure & Pipeline Status</div>
+      <div class="fml-div"></div>
+      <div class="fml-rules">Auto-generated each pipeline run &nbsp;·&nbsp; Download Excel for Power BI / Tableau</div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+
+      <!-- Fleet Summary -->
+      <div class="panel">
+        <div class="panel-title">Fleet snapshot — current run</div>
+        <div id="report-fleet-summary"></div>
+      </div>
+
+      <!-- Financial Exposure -->
+      <div class="panel">
+        <div class="panel-title">Financial exposure — penalty breakdown</div>
+        <div id="report-exposure"></div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px">
+      <!-- Market conditions -->
+      <div class="panel">
+        <div class="panel-title">Market conditions</div>
+        <div id="report-market"></div>
+      </div>
+      <!-- Top 5 critical -->
+      <div class="panel" style="grid-column:span 2">
+        <div class="panel-title">Priority queue — top critical containers</div>
+        <div id="report-critical-list"></div>
+      </div>
+    </div>
+
+    <!-- Export options -->
+    <div class="panel" style="margin-bottom:14px">
+      <div class="panel-title">Export & integrations</div>
+      <div id="report-exports"></div>
+    </div>
+
+    <!-- Pipeline run log -->
+    <div class="panel">
+      <div class="panel-title">Pipeline run log</div>
+      <div id="report-run-log"></div>
+    </div>
+
+  </div>
+</div>
+<script>
+// ═══════════════════════════════════════════════════════════
+// PAGE ROUTING — showPage()
+// ═══════════════════════════════════════════════════════════
+
+let MARKET = {};
+
+function showPage(page) {
+  // Update nav
+  document.querySelectorAll('#main-nav .nav-i').forEach(el => {
+    el.classList.toggle('act', el.dataset.page === page);
+  });
+  // Show/hide pages
+  ['fleet','lanes','contracts','reports'].forEach(p => {
+    const el = document.getElementById('page-' + p);
+    if (el) el.style.display = p === page ? '' : 'none';
+  });
+  // Sonar track is part of fleet page — hide on others
+  const sonarTrack = document.querySelector('.sonar-track');
+  if (sonarTrack) sonarTrack.style.display = page === 'fleet' ? '' : 'none';
+
+  // Render page content
+  if (page === 'lanes')     renderLanesPage();
+  if (page === 'contracts') renderContractsPage();
+  if (page === 'reports')   renderReportsPage();
+}
+
+// ── LANES PAGE ──────────────────────────────────────────────────────────────
+function renderLanesPage() {
+  const LANES = [
+    { key:'TRANS_PAC',  label:'Trans-Pacific',  route:'Asia → US West Coast',  flag:'🌏→🇺🇸', color:'#0A9396', transit:'11–17 days' },
+    { key:'TRANS_ATL',  label:'Trans-Atlantic',  route:'Europe → US East Coast', flag:'🇪🇺→🇺🇸', color:'#64A8E0', transit:'8–13 days' },
+    { key:'ASIA_EUR',   label:'Asia-Europe',     route:'Asia → Northern Europe', flag:'🌏→🇪🇺', color:'#A880CC', transit:'20–25 days' },
+    { key:'INTRA_ASIA', label:'Intra-Asia',      route:'Within Asia-Pacific',    flag:'🌏↔🌏', color:'#4AAF8A', transit:'2–5 days' },
+  ];
+
+  // Big lane cards
+  document.getElementById('lanes-grid').innerHTML = LANES.map(ln => {
+    const ld       = D.filter(d => d.trade_lane === ln.key);
+    const crit     = ld.filter(d => d.action_status === 'Critical').length;
+    const warn     = ld.filter(d => d.action_status === 'Warning').length;
+    const safe     = ld.filter(d => d.action_status === 'Safe').length;
+    const pen      = ld.filter(d => d.days_to_lfd <= 0).reduce((s,d) => s + Number(d.burn_rate_usd||0), 0);
+    const atSea    = ld.filter(d => d.lifecycle_stage === 'AT_SEA').length;
+    const avgBuf   = ld.length ? (ld.reduce((s,d) => s + Number(d.days_to_lfd||0), 0) / ld.length).toFixed(1) : '—';
+    const critPct  = ld.length ? Math.round(crit/ld.length*100) : 0;
+    return `
+    <div class="panel" style="cursor:pointer;border-left:2px solid ${ln.color}" onclick="filterLaneTable('${ln.key}')">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px">
+        <div>
+          <div style="font-family:var(--serif);font-size:20px;font-weight:500;color:${ln.color}">${ln.label}</div>
+          <div style="font-family:var(--mono);font-size:9px;color:rgba(232,244,246,.38);margin-top:2px">${ln.route} · ${ln.transit}</div>
+        </div>
+        <div style="font-family:var(--mono);font-size:24px;color:${ln.color};opacity:.7">${ld.length}</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px">
+        <div><div style="font-family:var(--mono);font-size:8px;color:rgba(232,244,246,.28);letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px">Critical</div><div style="font-family:var(--serif);font-size:18px;color:var(--alert)">${crit}</div></div>
+        <div><div style="font-family:var(--mono);font-size:8px;color:rgba(232,244,246,.28);letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px">Warning</div><div style="font-family:var(--serif);font-size:18px;color:var(--warn)">${warn}</div></div>
+        <div><div style="font-family:var(--mono);font-size:8px;color:rgba(232,244,246,.28);letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px">At Sea</div><div style="font-family:var(--serif);font-size:18px;color:${ln.color}">${atSea}</div></div>
+        <div><div style="font-family:var(--mono);font-size:8px;color:rgba(232,244,246,.28);letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px">Avg Buffer</div><div style="font-family:var(--serif);font-size:18px;color:var(--foam)">${avgBuf}d</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="flex:1;height:4px;background:var(--depth3);border-radius:2px;overflow:hidden">
+          <div style="height:100%;background:${crit>0?'var(--alert)':ln.color};width:${critPct}%;border-radius:2px;transition:width .5s"></div>
+        </div>
+        <div style="font-family:var(--mono);font-size:10px;color:${pen>0?'var(--alert)':'rgba(232,244,246,.35)'}">${pen>0?'$'+Math.round(pen).toLocaleString()+' penalty':'No penalties'}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Penalty bars
+  const lanesForBar = LANES.map(ln => ({ ...ln, burn: D.filter(d=>d.trade_lane===ln.key&&d.days_to_lfd<=0).reduce((s,d)=>s+Number(d.burn_rate_usd||0),0) })).sort((a,b)=>b.burn-a.burn);
+  const mx = Math.max(...lanesForBar.map(l=>l.burn), 1);
+  document.getElementById('lane-penalty-bars').innerHTML = lanesForBar.map(ln => `
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:9px">
+      <div style="font-family:var(--mono);font-size:9px;color:rgba(232,244,246,.5);min-width:95px;text-transform:uppercase;letter-spacing:.06em">${ln.label}</div>
+      <div style="flex:1;height:4px;background:var(--depth3);border-radius:2px;overflow:hidden"><div style="height:100%;background:${ln.color};width:${(ln.burn/mx*100).toFixed(1)}%;border-radius:2px"></div></div>
+      <div style="font-family:var(--mono);font-size:9px;color:${ln.burn>0?ln.color:'rgba(232,244,246,.28)'};min-width:55px;text-align:right">${ln.burn>0?'$'+Math.round(ln.burn/1000)+'k':'—'}</div>
+    </div>`).join('');
+
+  // Stage mix per lane
+  const stages = ['GATE_IN','AT_SEA','ARRIVED','IN_FREE_DAYS','OVERDUE'];
+  const stageCols = {GATE_IN:'rgba(196,224,229,.6)',AT_SEA:'#0A9396',ARRIVED:'#64C8CC',IN_FREE_DAYS:'#D4A030',OVERDUE:'#E05252'};
+  const stageLbls = {GATE_IN:'Gate-In',AT_SEA:'At Sea',ARRIVED:'Arrived',IN_FREE_DAYS:'Free Days',OVERDUE:'Overdue'};
+  document.getElementById('lane-stage-mix').innerHTML = LANES.map(ln => {
+    const ld = D.filter(d=>d.trade_lane===ln.key);
+    const total = ld.length || 1;
+    const stageCounts = stages.map(s => ({ s, n: ld.filter(d=>d.lifecycle_stage===s).length }));
+    return `
+      <div style="margin-bottom:10px">
+        <div style="font-family:var(--mono);font-size:9px;color:${ln.color};letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px">${ln.label}</div>
+        <div style="display:flex;height:8px;border-radius:2px;overflow:hidden;gap:1px">
+          ${stageCounts.map(({s,n}) => n > 0 ? `<div title="${stageLbls[s]}: ${n}" style="flex:${n};background:${stageCols[s]};border-radius:1px"></div>` : '').join('')}
+        </div>
+        <div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap">
+          ${stageCounts.filter(({n})=>n>0).map(({s,n}) => `<span style="font-family:var(--mono);font-size:8px;color:${stageCols[s]}">${stageLbls[s]}:${n}</span>`).join('')}
+        </div>
+      </div>`;
+  }).join('');
+
+  // Populate table with all containers sorted by penalty
+  renderLaneTable(D.slice().sort((a,b)=>Number(b.burn_rate_usd||0)-Number(a.burn_rate_usd||0)));
+}
+
+let laneTableFilter = 'ALL';
+function filterLaneTable(lane) {
+  laneTableFilter = laneTableFilter === lane ? 'ALL' : lane;
+  const rows = laneTableFilter === 'ALL' ? D : D.filter(d=>d.trade_lane===laneTableFilter);
+  renderLaneTable(rows.slice().sort((a,b)=>Number(b.burn_rate_usd||0)-Number(a.burn_rate_usd||0)));
+}
+
+function renderLaneTable(rows) {
+  const LANE_COLORS = {TRANS_PAC:'#0A9396',TRANS_ATL:'#64A8E0',ASIA_EUR:'#A880CC',INTRA_ASIA:'#4AAF8A'};
+  document.getElementById('lanes-tbody').innerHTML = rows.map(d => {
+    const lc = LANE_COLORS[d.trade_lane] || 'var(--foam2)';
+    return `<tr onclick="openJourney('${d.container_id}')" style="cursor:pointer">
+      <td class="td-id">${d.container_id||'—'}</td>
+      <td><span class="ltag ${ltC(d.lease_type)}">${d.lease_type||'—'}</span></td>
+      <td><span style="font-family:var(--mono);font-size:9px;color:${lc};letter-spacing:.06em;text-transform:uppercase">${LL[d.trade_lane]||d.trade_lane||'—'}</span></td>
+      <td>${stgB(d.lifecycle_stage)}</td>
+      <td style="color:var(--foam2);max-width:140px;overflow:hidden;text-overflow:ellipsis">${d.vessel_name||'—'}</td>
+      <td><span class="loctag">${d.origin_locode||'—'}</span></td>
+      <td><span class="loctag">${d.dest_locode||'—'}</span></td>
+      <td>${bufB(d.days_to_lfd)}</td>
+      <td>${burnD(d)}</td>
+      <td>${stsB(d.action_status||'Safe')}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── CONTRACTS PAGE ──────────────────────────────────────────────────────────
+let contractLeaseFilter = 'ALL';
+let contractStatusFilter = 'ALL';
+
+function renderContractsPage() {
+  // KPI row
+  const byLease = ['One-Way','Master Lease','Long-Term'].map(lt => {
+    const rows = D.filter(d=>d.lease_type===lt);
+    const pen  = rows.filter(d=>d.days_to_lfd<=0).reduce((s,d)=>s+Number(d.burn_rate_usd||0),0);
+    const avgPd = rows.length ? Math.round(rows.reduce((s,d)=>s+Number(d.per_diem_rate||0),0)/rows.length) : 0;
+    const avgFd = rows.length ? Math.round(rows.reduce((s,d)=>s+Number(d.agreed_free_days||0),0)/rows.length) : 0;
+    return { lt, count: rows.length, pen, avgPd, avgFd };
+  });
+  const totalPen = D.filter(d=>d.days_to_lfd<=0).reduce((s,d)=>s+Number(d.burn_rate_usd||0),0);
+  const avgRate  = D.length ? Math.round(D.reduce((s,d)=>s+Number(d.per_diem_rate||0),0)/D.length) : 0;
+
+  document.getElementById('contracts-kpis').innerHTML = [
+    {l:'Active Contracts', v:D.length,                   c:'teal', s:'current fleet'},
+    {l:'Avg Per-Diem',     v:'$'+avgRate+'/day',          c:'',    s:'all lease types'},
+    {l:'Total Penalty',    v:'$'+Math.round(totalPen).toLocaleString(), c:'red', s:'accrued today'},
+    {l:'One-Way',          v:byLease[0].count,            c:'',    s:byLease[0].count+' contracts'},
+    {l:'Master / Long-T',  v:byLease[1].count+' / '+byLease[2].count, c:'', s:'active leases'},
+  ].map(k=>`<div class="kpi"><div class="kpi-lbl">${k.l}</div><div class="kpi-val ${k.c}">${k.v}</div><div class="kpi-sub">${k.s}</div></div>`).join('');
+
+  // Lease distribution bars
+  const maxCount = Math.max(...byLease.map(l=>l.count),1);
+  const leaseColors = {'One-Way':'#64A8E0','Master Lease':'#A880CC','Long-Term':'#4AAF8A'};
+  document.getElementById('contract-lease-bars').innerHTML = byLease.map(l => `
+    <div style="margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+        <span style="font-family:var(--mono);font-size:9px;color:${leaseColors[l.lt]||'var(--foam2)'};text-transform:uppercase;letter-spacing:.06em">${l.lt}</span>
+        <span style="font-family:var(--mono);font-size:9px;color:rgba(232,244,246,.4)">${l.count} contracts</span>
+      </div>
+      <div style="height:5px;background:var(--depth3);border-radius:2px;overflow:hidden;margin-bottom:4px">
+        <div style="height:100%;background:${leaseColors[l.lt]||'var(--teal)'};width:${(l.count/maxCount*100).toFixed(1)}%;border-radius:2px"></div>
+      </div>
+      <div style="font-family:var(--mono);font-size:8px;color:rgba(232,244,246,.3)">Avg ${l.avgFd}d free · $${l.avgPd}/day · ${l.pen>0?'$'+Math.round(l.pen/1000)+'k penalty':'no penalties'}</div>
+    </div>`).join('');
+
+  // Per-diem rate ranges
+  const leaseRateRows = byLease.map(l => {
+    const rates = D.filter(d=>d.lease_type===l.lt).map(d=>Number(d.per_diem_rate||0));
+    const min = rates.length ? Math.min(...rates) : 0;
+    const max = rates.length ? Math.max(...rates) : 0;
+    return { ...l, min, max };
+  });
+  const globalMax = Math.max(...leaseRateRows.map(l=>l.max), 1);
+  document.getElementById('contract-rate-ranges').innerHTML = leaseRateRows.map(l => `
+    <div style="margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+        <span style="font-family:var(--mono);font-size:9px;color:${leaseColors[l.lt]||'var(--foam2)'};text-transform:uppercase;letter-spacing:.05em">${l.lt}</span>
+        <span style="font-family:var(--mono);font-size:9px;color:rgba(232,244,246,.4)">$${l.min}–$${l.max}/day</span>
+      </div>
+      <div style="position:relative;height:5px;background:var(--depth3);border-radius:2px;overflow:hidden">
+        <div style="position:absolute;top:0;height:100%;background:${leaseColors[l.lt]||'var(--teal)'};left:${(l.min/globalMax*100).toFixed(1)}%;width:${((l.max-l.min)/globalMax*100).toFixed(1)}%;border-radius:2px"></div>
+      </div>
+    </div>`).join('');
+
+  // Free days
+  document.getElementById('contract-freedays').innerHTML = byLease.map(l => `
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:11px">
+      <span style="font-family:var(--mono);font-size:9px;color:${leaseColors[l.lt]||'var(--foam2)'};min-width:95px;text-transform:uppercase;letter-spacing:.05em">${l.lt}</span>
+      <div style="flex:1;height:4px;background:var(--depth3);border-radius:2px;overflow:hidden">
+        <div style="height:100%;background:${leaseColors[l.lt]||'var(--teal)'};width:${Math.min(100,l.avgFd/35*100).toFixed(1)}%;border-radius:2px"></div>
+      </div>
+      <span style="font-family:var(--mono);font-size:10px;color:${leaseColors[l.lt]||'var(--foam2)'}">avg ${l.avgFd}d</span>
+    </div>`).join('');
+
+  // Wire filter buttons
+  document.querySelectorAll('#contract-lease-segs .seg').forEach(btn => {
+    btn.addEventListener('click', () => {
+      contractLeaseFilter = btn.dataset.val;
+      document.querySelectorAll('#contract-lease-segs .seg').forEach(b => b.classList.toggle('act', b.dataset.val === contractLeaseFilter));
+      renderContractsTable();
+    });
+  });
+  document.getElementById('contract-status-f').addEventListener('change', e => {
+    contractStatusFilter = e.target.value;
+    renderContractsTable();
+  });
+
+  renderContractsTable();
+}
+
+function renderContractsTable() {
+  let rows = D.filter(d => {
+    if (contractLeaseFilter !== 'ALL' && d.lease_type !== contractLeaseFilter) return false;
+    if (contractStatusFilter !== 'ALL' && d.action_status !== contractStatusFilter) return false;
+    return true;
+  }).sort((a,b) => Number(b.burn_rate_usd||0) - Number(a.burn_rate_usd||0));
+
+  document.getElementById('contract-rcount').textContent = rows.length + ' / ' + D.length + ' contracts';
+
+  const leaseColors = {'One-Way':'#64A8E0','Master Lease':'#A880CC','Long-Term':'#4AAF8A'};
+  document.getElementById('contracts-tbody').innerHTML = rows.map(d => {
+    const dtl  = Number(d.days_to_lfd||0);
+    const lfd  = d.lfd_parsed ? d.lfd_parsed.slice(0,10) : '—';
+    const lc   = leaseColors[d.lease_type] || 'var(--foam2)';
+    const burn = Number(d.burn_rate_usd||0);
+    const sc   = d.action_status==='Critical'?'c':d.action_status==='Warning'?'w':'s';
+    return `<tr onclick="openJourney('${d.contract_id||d.container_id}')" style="cursor:pointer">
+      <td style="font-family:var(--mono);font-size:10px;color:rgba(232,244,246,.5)">${d.contract_id||'—'}</td>
+      <td class="td-id">${d.container_id||'—'}</td>
+      <td><span class="ltag ${ltC(d.lease_type)}">${d.lease_type||'—'}</span></td>
+      <td><span style="font-family:var(--mono);font-size:9px;color:${lc}">${LL[d.trade_lane]||d.trade_lane||'—'}</span></td>
+      <td><span class="loctag">${d.origin_locode||'—'}</span></td>
+      <td><span class="loctag">${d.dest_locode||'—'}</span></td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--foam2)">${d.agreed_free_days||'—'}d</td>
+      <td style="font-family:var(--mono);font-size:10px;color:${lc}">$${d.per_diem_rate||0}/day</td>
+      <td style="font-family:var(--mono);font-size:10px;color:rgba(232,244,246,.5)">${lfd}</td>
+      <td>${bufB(d.days_to_lfd)}</td>
+      <td style="font-family:var(--mono);font-size:10px;color:${burn>0?'var(--alert)':'rgba(232,244,246,.3)'}">${burn>0?'$'+Math.round(burn).toLocaleString():'—'}</td>
+      <td><span class="sts sts-${sc}"><span class="sts-dot"></span>${d.action_status||'Safe'}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+// ── REPORTS PAGE ─────────────────────────────────────────────────────────────
+async function renderReportsPage() {
+  // Fleet summary
+  const crit = D.filter(d=>d.action_status==='Critical').length;
+  const warn = D.filter(d=>d.action_status==='Warning').length;
+  const safe = D.filter(d=>d.action_status==='Safe').length;
+  const pen  = D.filter(d=>d.days_to_lfd<=0).reduce((s,d)=>s+Number(d.burn_rate_usd||0),0);
+  const avgBuf = D.length ? (D.reduce((s,d)=>s+Number(d.days_to_lfd||0),0)/D.length).toFixed(1) : '—';
+  const atSea  = D.filter(d=>d.lifecycle_stage==='AT_SEA').length;
+  const overdue= D.filter(d=>d.lifecycle_stage==='OVERDUE').length;
+
+  const rows = [
+    ['Total containers',   D.length,       'var(--foam)'],
+    ['Critical',           crit,           'var(--alert)'],
+    ['Warning',            warn,           'var(--warn)'],
+    ['Safe',               safe,           'var(--teal)'],
+    ['At Sea',             atSea,          '#A880CC'],
+    ['Overdue',            overdue,        'var(--alert)'],
+    ['Avg buffer',         avgBuf+'d',     'var(--foam2)'],
+    ['Pipeline run #',     S.run_count||'—','var(--foam2)'],
+    ['Last run',           (S.generated_at||'—').slice(0,16).replace('T',' ')+' UTC', 'rgba(232,244,246,.5)'],
+  ];
+  document.getElementById('report-fleet-summary').innerHTML = rows.map(([k,v,c]) => `
+    <div style="display:flex;justify-content:space-between;align-items:baseline;padding:7px 0;border-bottom:1px solid var(--mist)">
+      <span style="font-family:var(--mono);font-size:10px;color:rgba(232,244,246,.4);letter-spacing:.06em;text-transform:uppercase">${k}</span>
+      <span style="font-family:var(--serif);font-size:16px;color:${c}">${v}</span>
+    </div>`).join('');
+
+  // Exposure breakdown
+  const byLane = ['TRANS_PAC','TRANS_ATL','ASIA_EUR','INTRA_ASIA'].map(lane => ({
+    lane, label: LL[lane], pen: D.filter(d=>d.trade_lane===lane&&d.days_to_lfd<=0).reduce((s,d)=>s+Number(d.burn_rate_usd||0),0)
+  })).sort((a,b)=>b.pen-a.pen);
+  const laneColors = {TRANS_PAC:'#0A9396',TRANS_ATL:'#64A8E0',ASIA_EUR:'#A880CC',INTRA_ASIA:'#4AAF8A'};
+  const maxPen = Math.max(...byLane.map(l=>l.pen), 1);
+  const proj7dReport = D.reduce((s,d)=>s+Number(d.projected_exposure_7d_usd||0),0);
+  document.getElementById('report-exposure').innerHTML = `
+    <div style="display:flex;gap:18px;margin-bottom:10px">
+      <div><div style="font-family:var(--serif);font-size:24px;font-weight:500;color:var(--alert)">$${Math.round(pen).toLocaleString()}</div><div style="font-family:var(--mono);font-size:8px;color:rgba(232,244,246,.3);text-transform:uppercase;letter-spacing:.1em">Today's penalty</div></div>
+      <div style="width:1px;background:var(--mist2)"></div>
+      <div><div style="font-family:var(--serif);font-size:24px;font-weight:500;color:#E07030">$${Math.round(proj7dReport).toLocaleString()}</div><div style="font-family:var(--mono);font-size:8px;color:rgba(232,244,246,.3);text-transform:uppercase;letter-spacing:.1em">7-Day Forecast</div></div>
+    </div>
+    <div style="font-family:var(--mono);font-size:8px;color:rgba(232,244,246,.35);margin-bottom:12px;text-transform:uppercase;letter-spacing:.1em">Financial exposure breakdown by lane</div>
+    ${byLane.map(l=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <span style="font-family:var(--mono);font-size:9px;color:${laneColors[l.lane]};min-width:100px;text-transform:uppercase;letter-spacing:.05em">${l.label}</span>
+      <div style="flex:1;height:4px;background:var(--depth3);border-radius:2px;overflow:hidden"><div style="height:100%;background:${laneColors[l.lane]};width:${(l.pen/maxPen*100).toFixed(1)}%;border-radius:2px"></div></div>
+      <span style="font-family:var(--mono);font-size:9px;color:${l.pen>0?laneColors[l.lane]:'rgba(232,244,246,.28)'};min-width:52px;text-align:right">${l.pen>0?'$'+Math.round(l.pen/1000)+'k':'—'}</span>
+    </div>`).join('')}`;
+
+  // Market conditions
+  try {
+    const mr = await fetch('./data/gold/market.json?t='+Date.now()).then(r=>r.json());
+    MARKET = mr;
+    const sentCol = mr.sentiment==='hot'?'var(--alert)':mr.sentiment==='soft'?'var(--warn)':'var(--teal)';
+    document.getElementById('report-market').innerHTML = `
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+        <span style="font-family:var(--serif);font-size:18px;color:${sentCol};text-transform:capitalize">${mr.sentiment||'normal'}</span>
+        <span style="font-family:var(--mono);font-size:9px;color:rgba(232,244,246,.35);text-transform:uppercase;letter-spacing:.1em">market</span>
+      </div>
+      <div style="font-family:var(--mono);font-size:9px;color:rgba(232,244,246,.35);margin-bottom:10px;text-transform:uppercase;letter-spacing:.1em">Source: ${mr.source||'—'}</div>
+      ${Object.entries(mr.lane_multipliers||{}).map(([lane,mult])=>`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--mist)">
+        <span style="font-family:var(--mono);font-size:9px;color:rgba(232,244,246,.45);text-transform:uppercase">${LL[lane]||lane}</span>
+        <span style="font-family:var(--mono);font-size:10px;color:${mult>1.1?'var(--alert)':mult<0.9?'var(--teal)':'var(--foam2)'}">${mult.toFixed(2)}x</span>
+      </div>`).join('')}
+      ${(mr.disruptions||[]).length>0?`<div style="margin-top:10px;padding:8px;background:var(--alert-dim);border:1px solid var(--alert-bdr);border-radius:2px;font-family:var(--mono);font-size:9px;color:var(--alert)">⚠ Active: ${mr.disruptions.map(d=>d.name).join(', ')}</div>`:''}`;
+  } catch(e) {
+    document.getElementById('report-market').innerHTML = '<div style="font-family:var(--mono);font-size:10px;color:rgba(232,244,246,.3);font-style:italic">Market data unavailable</div>';
+  }
+
+  // Top critical
+  const topCrit = D.filter(d=>d.action_status==='Critical').sort((a,b)=>Number(b.burn_rate_usd||0)-Number(a.burn_rate_usd||0)).slice(0,5);
+  document.getElementById('report-critical-list').innerHTML = topCrit.length > 0
+    ? topCrit.map((d,i)=>`
+      <div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--mist);cursor:pointer" onclick="openJourney('${d.container_id}')">
+        <div style="font-family:var(--serif);font-size:18px;color:var(--depth3);min-width:20px">${i+1}</div>
+        <div style="flex:1">
+          <div style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--foam)">${d.container_id}</div>
+          <div style="font-family:var(--mono);font-size:9px;color:rgba(232,244,246,.4);margin-top:1px">${d.vessel_name||'—'} · ${LL[d.trade_lane]||d.trade_lane} · ${d.lease_type}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-family:var(--mono);font-size:11px;color:var(--alert);font-weight:500">$${Math.round(d.burn_rate_usd||0).toLocaleString()}</div>
+          <div style="font-family:var(--mono);font-size:9px;color:rgba(232,244,246,.4)">${Number(d.days_to_lfd||0).toFixed(1)}d overdue</div>
+        </div>
+      </div>`).join('')
+    : '<div style="font-family:var(--serif);font-size:14px;color:rgba(232,244,246,.3);font-style:italic;padding:16px 0">No critical containers — fleet is healthy</div>';
+
+  // Exports
+  const OWNER = window.location.hostname.split('.')[0];
+  const BASE  = window.location.origin + window.location.pathname.replace('index.html','');
+  document.getElementById('report-exports').innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+      ${[
+        { label:'Excel Report', sub:'7-sheet Power BI workbook', icon:'📗', href:'./data/exports/reposea_report.xlsx', download:true },
+        { label:'Gold JSON',    sub:'Raw container data array', icon:'📄', href:'./data/gold/containers.json', download:false },
+        { label:'Summary JSON', sub:'KPI aggregates & lane stats', icon:'📊', href:'./data/gold/summary.json', download:false },
+        { label:'History JSON', sub:'30-day journey snapshots', icon:'📅', href:'./data/gold/history.json', download:false },
+        { label:'Fleet Map',    sub:'Live geomap — vessel positions', icon:'🗺️', href:'./map.html', download:false },
+        ].map(e=>`
+        <a href="${e.href}" ${e.download?'download':''} ${e.href.startsWith('http')?'target="_blank"':''} style="text-decoration:none">
+          <div style="background:var(--abyss);border:1px solid var(--mist2);border-radius:2px;padding:12px 14px;display:flex;align-items:center;gap:10px;transition:border-color .15s" onmouseover="this.style.borderColor='rgba(10,147,150,.4)'" onmouseout="this.style.borderColor='var(--mist2)'">
+            <span style="font-size:18px">${e.icon}</span>
+            <div>
+              <div style="font-family:var(--mono);font-size:10px;font-weight:700;color:var(--foam);letter-spacing:.04em">${e.label}</div>
+              <div style="font-family:var(--mono);font-size:8px;color:rgba(232,244,246,.35);margin-top:2px">${e.sub}</div>
+            </div>
+          </div>
+        </a>`).join('')}
+    </div>`;
+
+  // Run log
+  const history = (await fetch('./data/gold/history.json?t='+Date.now()).then(r=>r.json()).catch(()=>null));
+  const tracked = history ? history.total_containers_tracked : '—';
+  const runs    = history ? history.current_fleet_size : '—';
+  document.getElementById('report-run-log').innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--mist2);border-radius:2px;overflow:hidden;margin-bottom:12px">
+      ${[
+        ['Pipeline Runs',      S.run_count||'—'],
+        ['Containers Tracked', tracked],
+        ['Retention Period',   '30 days'],
+        ['Clean Cycle',        'Each run'],
+      ].map(([k,v])=>`<div style="padding:10px 14px;border-right:1px solid var(--mist2)">
+        <div style="font-family:var(--mono);font-size:8px;color:rgba(232,244,246,.28);letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px">${k}</div>
+        <div style="font-family:var(--serif);font-size:18px;color:var(--foam)">${v}</div>
+      </div>`).join('')}
+    </div>
+    <div style="font-family:var(--mono);font-size:9px;color:rgba(232,244,246,.35);line-height:1.7">
+      Pipeline runs every hour via GitHub Actions cron (0 * * * *). Each run: Bronze ingestion (AIS + EDI 322 + ERP) → Silver clean (LOCODE standardize, dedup, merge) → Gold (buffer calc, status flags, burn rate) → Excel export → dashboard deploy → history snapshot appended. History auto-pruned at 30 days / 720 entries per container.
+    </div>`;
+}
+</script>
+</body>
+</html>
