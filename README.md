@@ -5,8 +5,8 @@
 **Real-time container fleet intelligence. Every voyage tracked, every penalty prevented.**
 
 [![Fork this repo](https://img.shields.io/badge/🍴_Fork-Start_in_30s-071E2E?style=for-the-badge)](../../fork)
-[![Live Dashboard](https://img.shields.io/badge/🌊_Live_Dashboard-GitHub_Pages-0A9396?style=for-the-badge)](https://YOUR_USERNAME.github.io/reposea/)
-[![Pipeline](https://github.com/YOUR_USERNAME/reposea/actions/workflows/pipeline.yml/badge.svg)](../../actions)
+[![Live Dashboard](https://img.shields.io/badge/🌊_Live_Dashboard-GitHub_Pages-0A9396?style=for-the-badge)](https://rahulmistry18.github.io/-Reposea_container_optimizer/)
+[![Pipeline](https://github.com/rahulmistry18/-Reposea_container_optimizer/actions/workflows/pipeline.yml/badge.svg)](../../actions)
 
 ```
 AIS Feed + EDI 322 + ERP  ──▶  🥉 Bronze  (stateful fleet tick)
@@ -32,7 +32,7 @@ AIS Feed + EDI 322 + ERP  ──▶  🥉 Bronze  (stateful fleet tick)
 3. **Settings → Pages → Source → GitHub Actions → Save**
 4. **Actions → "🍴 Fork Setup" → Run workflow**
 
-Your live dashboard is at `https://YOUR_USERNAME.github.io/reposea/` within 2 minutes.
+Your live dashboard is at `https://rahulmistry18.github.io/-Reposea_container_optimizer/` within 2 minutes.
 
 > Open **`docs/SETUP_GUIDE.html`** in your browser for the full interactive 10-step walkthrough.
 
@@ -94,7 +94,7 @@ Initial fleet seeds with a realistic distribution:
 | Method | URL | Best For |
 |--------|-----|----------|
 | **Excel** | `data/exports/reposea_report.xlsx` (raw GitHub URL) | Power BI Desktop |
-| **JSON** | `https://YOUR_USERNAME.github.io/reposea/data/gold/containers.json` | Web connectors |
+| **JSON** | `https://rahulmistry18.github.io/-Reposea_container_optimizer/data/gold/containers.json` | Web connectors |
 | **Parquet** | `data/gold/containers.parquet` (raw GitHub URL) | Tableau |
 
 Full guide: `docs/POWER_BI_GUIDE.md`

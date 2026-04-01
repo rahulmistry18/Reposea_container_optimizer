@@ -30,7 +30,7 @@ It contains 7 sheets:
 2. **Home → Get Data → Excel Workbook**
 3. Enter the direct download URL:
    ```
-   https://raw.githubusercontent.com/YOUR_USERNAME/reposea/main/data/exports/container_report.xlsx
+   https://raw.githubusercontent.com/rahulmistry18/-Reposea_container_optimizer/main/data/exports/container_report.xlsx
    ```
    Or point to the local file path if running locally.
 4. Select the **Containers** table (it's already an Excel Table — Power BI detects it automatically)
@@ -55,14 +55,14 @@ It contains 7 sheets:
 The dashboard's Gold JSON is publicly accessible:
 
 ```
-https://YOUR_USERNAME.github.io/reposea/data/gold/containers.json
-https://YOUR_USERNAME.github.io/reposea/data/gold/summary.json
+https://rahulmistry18.github.io/-Reposea_container_optimizer/data/gold/containers.json
+https://rahulmistry18.github.io/-Reposea_container_optimizer/data/gold/summary.json
 ```
 
 ### Power BI — Web Connector
 
 1. **Get Data → Web**
-2. URL: `https://YOUR_USERNAME.github.io/reposea/data/gold/containers.json`
+2. URL: `https://rahulmistry18.github.io/-Reposea_container_optimizer/data/gold/containers.json`
 3. Power BI will parse the JSON array automatically
 4. Expand the nested columns as needed
 
@@ -90,7 +90,7 @@ Parquet is 3-5× smaller than Excel and 10× faster to load.
 
 ### Power BI — Parquet
 1. **Get Data → Parquet**
-2. URL: `https://raw.githubusercontent.com/YOUR_USERNAME/reposea/main/data/gold/containers.parquet`
+2. URL: `https://raw.githubusercontent.com/rahulmistry18/-Reposea_container_optimizer/main/data/gold/containers.parquet`
 
 ---
 
