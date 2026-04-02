@@ -8,64 +8,68 @@
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --abyss:#071E2E;--depth1:#0A2840;--depth2:#0D3355;--depth3:#1A3F5C;
-  --teal:#0A9396;--teal-glow:rgba(10,147,150,0.15);--teal-dim:rgba(10,147,150,0.35);
-  --foam:#E8F4F6;--foam2:#C4E0E5;--mist:rgba(232,244,246,0.06);--mist2:rgba(232,244,246,0.13);
+  --abyss:#071E2E;--depth1:#0A2840;--teal:#0A9396;--teal-glow:rgba(10,147,150,0.15);
+  --teal-dim:rgba(10,147,150,0.35);--foam:#E8F4F6;--foam2:#C4E0E5;
+  --mist:rgba(232,244,246,0.06);--mist2:rgba(232,244,246,0.13);
   --alert:#E05252;--alert-dim:rgba(224,82,82,0.15);--alert-bdr:rgba(224,82,82,0.4);
   --warn:#D4A030;--warn-dim:rgba(212,160,48,0.12);--warn-bdr:rgba(212,160,48,0.4);
+  --conflict:#FF6B00;
   --mono:'JetBrains Mono',monospace;--serif:'EB Garamond',Georgia,serif;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{background:var(--abyss);color:var(--foam);font-family:var(--mono);height:100%;overflow:hidden}
-
 .topbar{position:absolute;top:0;left:0;right:0;z-index:1000;background:rgba(7,30,46,0.96);border-bottom:1px solid var(--mist2);height:48px;padding:0 18px;display:flex;align-items:center;gap:14px;backdrop-filter:blur(6px)}
 .brand{display:flex;align-items:center;gap:9px;text-decoration:none}
 .brand-mark{width:28px;height:28px;background:var(--teal);display:flex;align-items:center;justify-content:center;border-radius:3px;flex-shrink:0}
-.brand-name{font-family:var(--serif);font-size:17px;font-weight:500;color:var(--foam);letter-spacing:-.01em}
+.brand-name{font-family:var(--serif);font-size:17px;font-weight:500;color:var(--foam)}
 .brand-name span{color:var(--teal)}
 .brand-sep{width:1px;height:15px;background:var(--mist2)}
 .page-title{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(232,244,246,.35)}
 .topbar-right{display:flex;align-items:center;gap:9px;margin-left:auto}
 .tbar-btn{font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:rgba(232,244,246,.38);border:1px solid var(--mist2);padding:4px 9px;border-radius:2px;cursor:pointer;text-decoration:none;transition:all .15s;background:transparent}
-.tbar-btn:hover{color:var(--foam2)}
+.tbar-btn:hover{color:var(--foam2);border-color:var(--teal-dim)}
 .tbar-btn.teal{color:var(--teal);border-color:var(--teal-dim);background:var(--teal-glow)}
-.live-dot{width:6px;height:6px;border-radius:50%;background:var(--teal);animation:ld 2.5s ease-in-out infinite;flex-shrink:0}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--teal);animation:ld 2.5s ease-in-out infinite}
 @keyframes ld{0%,100%{opacity:1}50%{opacity:.25}}
 .run-ts{font-size:9px;color:rgba(232,244,246,.24)}
 
-/* KPI strip */
 .kpi-strip{position:absolute;top:48px;left:0;right:0;z-index:999;background:rgba(7,30,46,0.94);border-bottom:1px solid var(--mist2);padding:0 18px;display:flex;align-items:stretch;backdrop-filter:blur(4px)}
 .kpi-cell{display:flex;flex-direction:column;justify-content:center;padding:7px 14px;border-right:1px solid var(--mist2);min-width:110px;gap:2px}
-.kpi-cell:first-child{padding-left:0}
-.kpi-cell:last-child{border-right:none}
-.kpi-cell.fill{flex:1}
+.kpi-cell:last-child{border-right:none;margin-left:auto}
 .kpi-lbl{font-size:7px;letter-spacing:.14em;text-transform:uppercase;color:rgba(232,244,246,.26)}
 .kpi-val{font-family:var(--serif);font-size:18px;font-weight:500;line-height:1;color:var(--foam)}
-.kpi-val.red{color:var(--alert)}.kpi-val.amber{color:var(--warn)}.kpi-val.teal{color:var(--teal)}
+.kpi-val.red{color:var(--alert)}.kpi-val.amber{color:var(--warn)}.kpi-val.teal{color:var(--teal)}.kpi-val.orange{color:var(--conflict)}
 .kpi-sub{font-size:7px;color:rgba(232,244,246,.26)}
 
-/* Legend */
-.legend{position:absolute;bottom:18px;left:18px;z-index:999;background:rgba(7,30,46,0.92);border:1px solid var(--mist2);border-radius:3px;padding:11px 13px;backdrop-filter:blur(4px);min-width:165px}
+.legend{position:absolute;bottom:18px;left:18px;z-index:999;background:rgba(7,30,46,0.92);border:1px solid var(--mist2);border-radius:3px;padding:11px 13px;backdrop-filter:blur(4px);min-width:180px}
 .legend-title{font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:rgba(232,244,246,.26);margin-bottom:9px;padding-bottom:5px;border-bottom:1px solid var(--mist2)}
-.lg-row{display:flex;align-items:center;gap:7px;margin-bottom:6px}
+.lg-row{display:flex;align-items:center;gap:7px;margin-bottom:5px}
 .lg-row:last-child{margin-bottom:0}
-.lg-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.lg-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;border:1.5px solid}
+.lg-sq{width:10px;height:10px;flex-shrink:0;border:1.5px solid rgba(232,244,246,0.4)}
 .lg-line{width:20px;height:2px;border-radius:1px;flex-shrink:0}
 .lg-label{font-size:9px;color:rgba(232,244,246,.52)}
+.lg-sep{border-top:1px solid var(--mist2);margin:6px 0}
 
-/* Filter panel */
 .filter-panel{position:absolute;bottom:18px;right:18px;z-index:999;background:rgba(7,30,46,0.92);border:1px solid var(--mist2);border-radius:3px;padding:11px 13px;backdrop-filter:blur(4px);min-width:175px}
 .fp-title{font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:rgba(232,244,246,.26);margin-bottom:9px;padding-bottom:5px;border-bottom:1px solid var(--mist2)}
-.fp-group{margin-bottom:9px}
+.fp-group{margin-bottom:8px}
 .fp-grouplbl{font-size:8px;color:rgba(232,244,246,.28);letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px}
 .fp-btns{display:flex;flex-wrap:wrap;gap:4px}
-.fp-btn{font-size:8px;letter-spacing:.05em;padding:2px 7px;border-radius:2px;border:1px solid var(--mist2);cursor:pointer;color:rgba(232,244,246,.42);background:transparent;transition:all .15s}
+.fp-btn{font-size:8px;letter-spacing:.04em;padding:2px 7px;border-radius:2px;border:1px solid var(--mist2);cursor:pointer;color:rgba(232,244,246,.42);background:transparent;transition:all .15s}
 .fp-btn:hover{color:var(--foam2)}
 .fp-btn.on{color:var(--teal);border-color:var(--teal-dim);background:var(--teal-glow)}
 .fp-btn.on.red{color:var(--alert);border-color:var(--alert-bdr);background:var(--alert-dim)}
 .fp-btn.on.amber{color:var(--warn);border-color:var(--warn-bdr);background:var(--warn-dim)}
 
-/* Popup */
+.conflict-tooltip{background:rgba(7,30,46,0.96);border:1px solid var(--conflict);border-radius:3px;padding:10px 12px;font-family:var(--mono);font-size:9px;color:var(--foam);min-width:200px;max-width:260px}
+.ct-title{font-size:11px;font-weight:700;color:var(--conflict);margin-bottom:6px;letter-spacing:.02em}
+.ct-row{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(232,244,246,.06)}
+.ct-row:last-child{border-bottom:none}
+.ct-key{color:rgba(232,244,246,.45)}
+.ct-val{color:var(--foam);font-weight:500}
+.ct-val.danger{color:var(--conflict)}
+
 .leaflet-popup-content-wrapper{background:rgba(7,30,46,0.97)!important;border:1px solid var(--mist2)!important;border-radius:3px!important;box-shadow:none!important;padding:0!important;color:var(--foam)!important}
 .leaflet-popup-content{margin:0!important;padding:0!important}
 .leaflet-popup-tip-container{display:none}
@@ -73,21 +77,21 @@ html,body{background:var(--abyss);color:var(--foam);font-family:var(--mono);heig
 .leaflet-popup-close-button:hover{color:var(--foam)!important}
 .popup-inner{padding:13px 15px;min-width:215px}
 .pop-id{font-size:12px;font-weight:700;color:var(--foam);letter-spacing:.04em;margin-bottom:2px}
-.pop-vessel{font-size:10px;color:rgba(232,244,246,.42);margin-bottom:9px}
-.pop-stg{display:inline-flex;align-items:center;gap:3px;padding:2px 6px;border-radius:2px;font-size:8px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;border:1px solid;margin-bottom:9px}
+.pop-vessel{font-size:10px;color:rgba(232,244,246,.42);margin-bottom:8px}
+.pop-stg{display:inline-flex;align-items:center;gap:3px;padding:2px 6px;border-radius:2px;font-size:8px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;border:1px solid;margin-bottom:8px}
 .pop-stg.GATE_IN{color:var(--foam2);border-color:var(--mist2);background:var(--mist)}
 .pop-stg.AT_SEA{color:var(--teal);border-color:var(--teal-dim);background:var(--teal-glow)}
 .pop-stg.ARRIVED{color:#64C8CC;border-color:rgba(100,200,204,.3);background:rgba(100,200,204,.08)}
 .pop-stg.IN_FREE_DAYS{color:var(--warn);border-color:var(--warn-bdr);background:var(--warn-dim)}
 .pop-stg.OVERDUE{color:var(--alert);border-color:var(--alert-bdr);background:var(--alert-dim)}
-.pop-rows{display:flex;flex-direction:column;gap:4px;border-top:1px solid var(--mist2);padding-top:9px}
+.pop-rows{display:flex;flex-direction:column;gap:4px;border-top:1px solid var(--mist2);padding-top:8px}
 .pop-row{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
 .pop-key{font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:rgba(232,244,246,.28)}
 .pop-val{font-size:10px;font-weight:500}
 .pop-val.red{color:var(--alert)}.pop-val.amber{color:var(--warn)}.pop-val.teal{color:var(--teal)}
-.pop-prog-wrap{border-top:1px solid var(--mist2);padding-top:9px;margin-top:2px}
-.pop-prog-lbl{font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:rgba(232,244,246,.28);margin-bottom:4px;display:flex;justify-content:space-between}
-.pop-prog-track{height:4px;background:var(--depth3);border-radius:2px;overflow:hidden}
+.pop-prog-wrap{border-top:1px solid var(--mist2);padding-top:8px;margin-top:2px}
+.pop-prog-lbl{font-size:8px;letter-spacing:.08em;text-transform:uppercase;color:rgba(232,244,246,.28);margin-bottom:4px;display:flex;justify-content:space-between}
+.pop-prog-track{height:4px;background:rgba(232,244,246,.08);border-radius:2px;overflow:hidden}
 .pop-prog-fill{height:100%;border-radius:2px}
 
 #map{position:absolute;top:0;left:0;right:0;bottom:0}
@@ -95,7 +99,6 @@ html,body{background:var(--abyss);color:var(--foam);font-family:var(--mono);heig
 </style>
 </head>
 <body>
-
 <div id="map"></div>
 
 <div class="topbar">
@@ -117,18 +120,17 @@ html,body{background:var(--abyss);color:var(--foam);font-family:var(--mono);heig
 
 <div class="legend">
   <div class="legend-title">Map legend</div>
-  <div class="lg-row"><div class="lg-dot" style="background:var(--alert)"></div><div class="lg-label">Critical — overdue penalty</div></div>
-  <div class="lg-row"><div class="lg-dot" style="background:var(--warn)"></div><div class="lg-label">Warning — ≤ 2 days left</div></div>
-  <div class="lg-row"><div class="lg-dot" style="background:var(--teal)"></div><div class="lg-label">Safe — en route</div></div>
-  <div class="lg-row"><div class="lg-dot" style="background:#64C8CC"></div><div class="lg-label">At port / arrived</div></div>
-  <div class="lg-row" style="margin-top:5px;padding-top:5px;border-top:1px solid var(--mist2)">
-    <div class="lg-line" style="background:rgba(10,147,150,0.55)"></div><div class="lg-label">Ocean route arc</div>
-  </div>
+  <div class="lg-row"><div class="lg-dot" style="background:var(--alert);border-color:var(--alert)"></div><div class="lg-label">Critical — penalty accruing</div></div>
+  <div class="lg-row"><div class="lg-dot" style="background:var(--warn);border-color:var(--warn)"></div><div class="lg-label">Warning — ≤ 2 days buffer</div></div>
+  <div class="lg-row"><div class="lg-dot" style="background:var(--teal);border-color:var(--teal)"></div><div class="lg-label">Safe — en route</div></div>
+  <div class="lg-row"><div class="lg-dot" style="background:#64C8CC;border-color:#64C8CC"></div><div class="lg-label">Arrived / at terminal</div></div>
+  <div class="lg-sep"></div>
+  <div class="lg-row"><div class="lg-line" style="background:rgba(10,147,150,0.5)"></div><div class="lg-label">Trade lane route</div></div>
+  <div class="lg-row"><div class="lg-sq"></div><div class="lg-label">Port / terminal</div></div>
+  <div class="lg-sep"></div>
   <div class="lg-row">
-    <div class="lg-line" style="background:rgba(224,82,82,0.5);height:0;border-top:1px dashed var(--alert)"></div><div class="lg-label">Critical route</div>
-  </div>
-  <div class="lg-row">
-    <div class="lg-dot" style="background:rgba(232,244,246,0.25);width:7px;height:7px;border:1px solid rgba(232,244,246,0.4)"></div><div class="lg-label">Port / waypoint</div>
+    <svg width="12" height="12" viewBox="0 0 12 12"><polygon points="6,1 11,11 1,11" fill="#FF6B00" opacity="0.9"/></svg>
+    <div class="lg-label" style="color:var(--conflict)">Geopolitical conflict zone</div>
   </div>
 </div>
 
@@ -165,176 +167,190 @@ html,body{background:var(--abyss);color:var(--foam);font-family:var(--mono);heig
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
-// ── Port coordinates (ocean entry/exit points, not city centres) ─────────────
-// Deliberately placed at anchorage/approach zones so routes are fully over water
+// ══ UN/LOCODE port coordinates (anchorage/approach zones, not city centre) ══
 const PORTS = {
-  CNSHA:[30.8, 122.1],   NLRTM:[51.9, 3.9],    DEHAM:[53.8, 8.5],
-  USLAX:[33.6,-118.5],   USNYC:[40.5,-74.2],   SGSIN:[1.15,103.6],
-  KRPUS:[35.0, 129.2],   TWKHH:[22.5, 120.1],  GBFXT:[51.9,  1.6],
-  BEANR:[51.2,  3.8],    USLONG:[33.6,-118.3],  USSEA:[47.6,-122.5],
-  USOAK:[37.8,-122.4],   USSAV:[31.8, -80.9],  USBAL:[39.1, -76.7],
-  USBOS:[42.3, -70.9],   CNYTN:[22.6, 114.4],  CNQIN:[35.9, 120.5],
-  JPYOK:[35.3, 139.8],   THLCH:[13.1, 100.9],  PHMNL:[14.4, 120.9],
-  VNSGN:[10.6, 107.0],   INPAV:[18.8,  72.7],  HKHKG:[22.2, 114.1],
-  FRFOS:[43.2,  5.2],    ESBCN:[41.3,  2.2],   MYBTU:[5.7, 118.2],
-  IDPNK:[-3.9, 114.9],
+  CNSHA:[31.23,121.47],  NLRTM:[51.90,4.05],   DEHAM:[53.55,9.95],
+  USLAX:[33.74,-118.27], USNYC:[40.65,-74.00],  SGSIN:[1.26,103.82],
+  KRPUS:[35.10,129.04],  TWKHH:[22.62,120.28],  GBFXT:[51.95,1.33],
+  BEANR:[51.23,4.40],    USLONG:[33.75,-118.20], USSEA:[47.57,-122.40],
+  USOAK:[37.80,-122.33], USSAV:[32.08,-81.09],   USBAL:[39.28,-76.57],
+  USBOS:[42.36,-70.99],  CNYTN:[22.62,114.26],   CNQIN:[36.07,120.38],
+  JPYOK:[35.44,139.65],  THLCH:[13.08,100.90],   PHMNL:[14.59,120.98],
+  VNSGN:[10.78,107.02],  INPAV:[18.96,72.94],    HKHKG:[22.32,114.19],
+  FRFOS:[43.32,5.33],    ESBCN:[41.35,2.17],     MYBTU:[5.84,118.11],
+  IDPNK:[-3.80,114.74],  LB:   [33.75,-118.20],
 };
 
-// ── Great-circle waypoints — mid-ocean intermediate points for correct routing
-// These force arcs to stay over water and not cut through continents
-const WAYPOINTS = {
-  // Trans-Pacific: goes NORTH over the Pacific, not through the Americas
-  'CNSHA-USLAX':  [[30.8,122.1],[35,140],[42,160],[45,180],[45,-170],[42,-155],[38,-145],[35,-135],[33.6,-118.5]],
-  'CNSHA-USLONG': [[30.8,122.1],[35,140],[42,160],[45,180],[45,-170],[42,-155],[38,-145],[35,-135],[33.6,-118.3]],
-  'CNSHA-USSEA':  [[30.8,122.1],[36,140],[44,155],[50,170],[52,180],[50,-170],[48,-155],[47.6,-122.5]],
-  'CNSHA-USOAK':  [[30.8,122.1],[35,140],[42,160],[45,180],[45,-170],[42,-155],[38,-145],[37.8,-122.4]],
-  'CNYTN-USLAX':  [[22.6,114.4],[28,125],[35,140],[43,160],[46,180],[44,-170],[40,-155],[36,-135],[33.6,-118.5]],
-  'CNQIN-USOAK':  [[35.9,120.5],[38,135],[43,155],[47,175],[48,180],[47,-170],[43,-155],[37.8,-122.4]],
-  'TWKHH-USSEA':  [[22.5,120.1],[28,130],[36,145],[44,160],[50,175],[52,180],[50,-170],[47.6,-122.5]],
-  'HKHKG-USLAX':  [[22.2,114.1],[25,125],[33,142],[41,158],[45,175],[46,180],[44,-170],[40,-155],[33.6,-118.5]],
-  'JPYOK-USSEA':  [[35.3,139.8],[40,150],[46,160],[50,170],[52,180],[50,-170],[47.6,-122.5]],
-  'KRPUS-USLONG': [[35.0,129.2],[38,140],[44,158],[47,175],[48,180],[46,-170],[42,-155],[35,-135],[33.6,-118.3]],
-  // Trans-Atlantic: straight across Atlantic staying north
-  'NLRTM-USNYC':  [[51.9,3.9],[50,-10],[48,-25],[46,-40],[44,-50],[42,-60],[41,-70],[40.5,-74.2]],
-  'DEHAM-USNYC':  [[53.8,8.5],[52,-5],[50,-20],[47,-35],[44,-48],[42,-60],[41,-70],[40.5,-74.2]],
-  'BEANR-USNYC':  [[51.2,3.8],[50,-10],[47,-25],[44,-40],[42,-55],[41,-68],[40.5,-74.2]],
-  'DEHAM-USBAL':  [[53.8,8.5],[52,-5],[49,-20],[46,-35],[43,-50],[40,-63],[39.1,-76.7]],
-  'GBFXT-USBOS':  [[51.9,1.6],[50,-10],[47,-25],[44,-40],[42,-55],[42.3,-70.9]],
-  'NLRTM-USSAV':  [[51.9,3.9],[49,-10],[46,-25],[40,-45],[35,-65],[32,-75],[31.8,-80.9]],
-  'FRFOS-USNYC':  [[43.2,5.2],[38,-5],[35,-20],[34,-35],[36,-55],[38,-68],[40.5,-74.2]],
-  'ESBCN-USNYC':  [[41.3,2.2],[37,-10],[34,-25],[34,-45],[37,-63],[40.5,-74.2]],
-  // Asia-Europe: through Indian Ocean and Suez (staying in water)
-  'CNSHA-NLRTM':  [[30.8,122.1],[22,115],[10,107],[2,100],[-3,95],[5,80],[12,55],[25,40],[30,32],[32,26],[36,14],[44,8],[51.9,3.9]],
-  'CNSHA-DEHAM':  [[30.8,122.1],[22,115],[10,107],[2,100],[-3,95],[5,80],[12,55],[25,40],[30,32],[32,26],[36,14],[50,8],[53.8,8.5]],
-  'CNYTN-DEHAM':  [[22.6,114.4],[18,108],[8,103],[2,100],[-2,96],[5,80],[12,55],[25,40],[30,32],[32,26],[36,14],[50,8],[53.8,8.5]],
-  'CNSHA-BEANR':  [[30.8,122.1],[22,115],[10,107],[2,100],[-3,95],[5,80],[12,55],[25,40],[30,32],[32,26],[36,14],[44,5],[51.2,3.8]],
-  'KRPUS-NLRTM':  [[35.0,129.2],[28,120],[18,110],[8,103],[2,100],[-2,96],[5,80],[12,55],[25,40],[30,32],[32,26],[36,14],[44,8],[51.9,3.9]],
-  'JPYOK-NLRTM':  [[35.3,139.8],[28,128],[18,115],[8,107],[2,100],[-2,96],[5,80],[12,55],[25,40],[30,32],[32,26],[36,14],[44,8],[51.9,3.9]],
-  'SGSIN-GBFXT':  [[1.15,103.6],[5,90],[8,75],[12,58],[25,40],[30,32],[32,26],[36,14],[44,5],[51.9,1.6]],
-  'CNSHA-GBFXT':  [[30.8,122.1],[22,115],[10,107],[2,100],[-3,95],[5,80],[12,55],[25,40],[30,32],[32,26],[36,14],[44,5],[51.9,1.6]],
-  // Intra-Asia: shorter hops through known shipping lanes
-  'CNSHA-SGSIN':  [[30.8,122.1],[25,118],[18,112],[10,107],[4,105],[1.15,103.6]],
-  'CNSHA-THLCH':  [[30.8,122.1],[25,118],[18,112],[12,108],[8,104],[4,101],[13.1,100.9]],
-  'TWKHH-SGSIN':  [[22.5,120.1],[18,116],[12,110],[6,106],[1.15,103.6]],
-  'HKHKG-PHMNL':  [[22.2,114.1],[20,116],[17,119],[14.4,120.9]],
-  'CNSHA-VNSGN':  [[30.8,122.1],[25,118],[18,115],[14,112],[10.6,107.0]],
-  'KRPUS-JPYOK':  [[35.0,129.2],[35,132],[35.3,139.8]],
-  'SGSIN-MYBTU':  [[1.15,103.6],[3,107],[5,112],[5.7,118.2]],
-  'CNSHA-IDPNK':  [[30.8,122.1],[22,118],[12,112],[5,108],[0,110],[-3.9,114.9]],
+// ══ Maritime routes (hand-crafted ocean paths, no land crossing) ══
+const ROUTES = {
+  // Trans-Pacific — Great Circle over North Pacific
+  'CNSHA-USLAX':  [[31.23,121.47],[35,140],[42,160],[46,178],[46,-170],[42,-155],[36,-135],[33.74,-118.27]],
+  'CNSHA-USLONG': [[31.23,121.47],[35,140],[42,160],[46,178],[46,-170],[42,-155],[36,-135],[33.75,-118.20]],
+  'CNSHA-USSEA':  [[31.23,121.47],[36,138],[44,155],[50,170],[52,178],[49,-170],[47.57,-122.40]],
+  'CNSHA-USOAK':  [[31.23,121.47],[35,140],[42,160],[46,178],[46,-170],[42,-155],[37.80,-122.33]],
+  'CNYTN-USLAX':  [[22.62,114.26],[28,125],[35,140],[43,160],[46,178],[44,-170],[40,-155],[33.74,-118.27]],
+  'TWKHH-USSEA':  [[22.62,120.28],[28,130],[36,145],[44,160],[50,175],[52,178],[49,-170],[47.57,-122.40]],
+  'HKHKG-USLAX':  [[22.32,114.19],[26,125],[33,142],[41,158],[45,175],[46,178],[44,-170],[33.74,-118.27]],
+  'KRPUS-USLONG': [[35.10,129.04],[38,140],[44,158],[47,175],[48,178],[46,-170],[42,-155],[33.75,-118.20]],
+  'KRPUS-USSEA':  [[35.10,129.04],[40,140],[46,155],[50,170],[52,178],[49,-170],[47.57,-122.40]],
+  // Trans-Atlantic
+  'NLRTM-USNYC':  [[51.90,4.05],[50,-10],[48,-25],[46,-40],[44,-50],[42,-62],[40.65,-74.00]],
+  'DEHAM-USNYC':  [[53.55,9.95],[52,-5],[50,-20],[47,-35],[44,-48],[42,-62],[40.65,-74.00]],
+  'BEANR-USNYC':  [[51.23,4.40],[50,-10],[47,-25],[44,-40],[42,-55],[40.65,-74.00]],
+  'GBFXT-USBOS':  [[51.95,1.33],[50,-10],[47,-25],[44,-40],[42,-55],[42.36,-70.99]],
+  'NLRTM-USSAV':  [[51.90,4.05],[48,-10],[44,-25],[38,-45],[34,-63],[32.08,-81.09]],
+  'DEHAM-USBAL':  [[53.55,9.95],[51,-5],[48,-20],[44,-35],[40,-55],[39.28,-76.57]],
+  'FRFOS-USNYC':  [[43.32,5.33],[38,-5],[34,-20],[34,-38],[36,-57],[40.65,-74.00]],
+  'ESBCN-USNYC':  [[41.35,2.17],[36,-8],[33,-22],[34,-42],[37,-60],[40.65,-74.00]],
+  // Asia-Europe — Indian Ocean + Red Sea + Suez
+  'CNSHA-NLRTM':  [[31.23,121.47],[22,115],[10,107],[2,100],[-2,96],[5,80],[12,55],[25,40],[30,32],[32,27],[36,14],[44,8],[51.90,4.05]],
+  'CNSHA-DEHAM':  [[31.23,121.47],[22,115],[10,107],[2,100],[-2,96],[5,80],[12,55],[25,40],[30,32],[32,27],[36,14],[50,8],[53.55,9.95]],
+  'CNSHA-GBFXT':  [[31.23,121.47],[22,115],[10,107],[2,100],[-2,96],[5,80],[12,55],[25,40],[30,32],[32,27],[36,14],[44,4],[51.95,1.33]],
+  'KRPUS-NLRTM':  [[35.10,129.04],[28,120],[18,110],[8,103],[2,100],[-2,96],[5,80],[12,55],[25,40],[30,32],[32,27],[36,14],[51.90,4.05]],
+  'SGSIN-DEHAM':  [[1.26,103.82],[5,90],[8,75],[12,58],[25,40],[30,32],[32,27],[36,14],[53.55,9.95]],
+  'HKHKG-BEANR':  [[22.32,114.19],[18,108],[8,103],[2,100],[-2,96],[5,80],[12,55],[25,40],[30,32],[32,27],[36,14],[51.23,4.40]],
+  // Intra-Asia
+  'CNSHA-SGSIN':  [[31.23,121.47],[25,118],[18,112],[10,107],[4,105],[1.26,103.82]],
+  'TWKHH-SGSIN':  [[22.62,120.28],[18,116],[12,110],[6,106],[1.26,103.82]],
+  'HKHKG-PHMNL':  [[22.32,114.19],[20,116],[17,119],[14.59,120.98]],
+  'SGSIN-MYBTU':  [[1.26,103.82],[3,107],[5.84,118.11]],
+  'CNSHA-JPYOK':  [[31.23,121.47],[33,128],[35.44,139.65]],
+  'KRPUS-JPYOK':  [[35.10,129.04],[35,133],[35.44,139.65]],
+  'CNSHA-THLCH':  [[31.23,121.47],[25,118],[18,112],[12,108],[8,104],[13.08,100.90]],
 };
 
-// Get route waypoints — fallback to simple 2-point if no defined route
-function getRoute(origin, dest) {
-  const key = origin + '-' + dest;
-  const rkey = dest + '-' + origin;
-  if (WAYPOINTS[key]) return WAYPOINTS[key];
-  // Check reverse (flip for return voyages)
-  if (WAYPOINTS[rkey]) return [...WAYPOINTS[rkey]].reverse();
-  // Fallback: generic 3-point route staying in approximate ocean zone
-  const o = PORTS[origin], d = PORTS[dest];
-  if (!o || !d) return o && d ? [o, d] : [];
-  const mid = [(o[0]+d[0])/2, (o[1]+d[1])/2];
-  return [o, mid, d];
+function getRoute(o, d) {
+  return ROUTES[o+'-'+d] || ROUTES[d+'-'+o]?.slice().reverse() || (PORTS[o]&&PORTS[d]?[PORTS[o],PORTS[d]]:null);
 }
 
-// Interpolate position along route at fraction t (0–1)
-function posAtFraction(route, t) {
+function lerp(route, t) {
   if (!route || route.length < 2) return null;
-  const segCount = route.length - 1;
-  const segT     = t * segCount;
-  const segIdx   = Math.min(Math.floor(segT), segCount - 1);
-  const frac     = segT - segIdx;
-  const a = route[segIdx], b = route[segIdx + 1];
-  return [
-    a[0] + (b[0] - a[0]) * frac,
-    a[1] + (b[1] - a[1]) * frac,
-  ];
+  const n = route.length - 1;
+  const seg = Math.min(Math.floor(t * n), n - 1);
+  const f   = t * n - seg;
+  const a = route[seg], b = route[seg + 1];
+  return [a[0] + (b[0]-a[0])*f, a[1] + (b[1]-a[1])*f];
 }
 
-// ── Map setup ────────────────────────────────────────────────────────────────
-const map = L.map('map', {
-  center: [20, 15], zoom: 2, minZoom: 2, maxZoom: 9,
-  zoomControl: false, attributionControl: false,
-});
-L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
-  maxZoom: 19, subdomains: 'abcd',
-}).addTo(map);
-L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png', {
-  maxZoom: 19, subdomains: 'abcd', opacity: 0.35,
-}).addTo(map);
-L.control.zoom({ position: 'topright' }).addTo(map);
+// ══ Conflict zones — April 2026 geopolitical reality ══
+const CONFLICT_ZONES = [
+  {
+    id: 'hormuz',
+    name: 'Strait of Hormuz',
+    lat: 26.57, lon: 56.45,
+    severity: 'HIGH',
+    data: {
+      'Risk Level':    'HIGH',
+      'Status':        'Transit restrictions active',
+      'Insurance':     '+400% above baseline',
+      'Delay':         '3–7 days per transit',
+      'Affected lanes':'Asia-Europe, INTRA_ASIA',
+      'Since':         'Jan 2024 (escalated Mar 2026)',
+    },
+    advisory: 'UKMTO advises 60nm exclusion zone.',
+  },
+  {
+    id: 'redsea',
+    name: 'Red Sea / Bab-el-Mandeb',
+    lat: 12.58, lon: 43.32,
+    severity: 'CRITICAL',
+    data: {
+      'Risk Level':    'CRITICAL',
+      'Status':        'Active Houthi interdiction',
+      'Insurance':     '+400% war risk premium',
+      'Delay':         '10–14 days (Cape reroute)',
+      'Affected lanes':'Asia-Europe, TRANS_ATL',
+      'Since':         'Nov 2023 (ongoing Apr 2026)',
+    },
+    advisory: 'Most carriers rerouting via Cape of Good Hope.',
+  },
+];
 
-const STATUS_COLOR = { Critical: '#E05252', Warning: '#D4A030', Safe: '#0A9396' };
-const STAGE_LABEL  = { GATE_IN: 'Gate-In', AT_SEA: 'At Sea', ARRIVED: 'Arrived', IN_FREE_DAYS: 'Free Days', OVERDUE: 'Overdue', COMPLETE: 'Done' };
+const STATUS_COLOR = { Critical:'#E05252', Warning:'#D4A030', Safe:'#0A9396' };
+const STAGE_LABEL  = { GATE_IN:'Gate-In', AT_SEA:'At Sea', ARRIVED:'Arrived', IN_FREE_DAYS:'Free Days', OVERDUE:'Overdue' };
 
-let DATA = [], allLayers = [];
-let activeStatus = new Set(['Critical','Warning','Safe']);
-let activeStage  = new Set(['GATE_IN','AT_SEA','ARRIVED','IN_FREE_DAYS','OVERDUE']);
-let activeLane   = new Set(['TRANS_PAC','TRANS_ATL','ASIA_EUR','INTRA_ASIA']);
+// ══ Leaflet map ══
+const map = L.map('map', {center:[20,10], zoom:2, minZoom:2, maxZoom:9, zoomControl:false, attributionControl:false});
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',{maxZoom:19,subdomains:'abcd'}).addTo(map);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png',{maxZoom:19,subdomains:'abcd',opacity:0.35}).addTo(map);
+L.control.zoom({position:'topright'}).addTo(map);
 
-function clearLayers() {
-  allLayers.forEach(l => map.removeLayer(l));
-  allLayers = [];
+let DATA=[], allLayers=[];
+let activeStatus=new Set(['Critical','Warning','Safe']);
+let activeStage =new Set(['GATE_IN','AT_SEA','ARRIVED','IN_FREE_DAYS','OVERDUE']);
+let activeLane  =new Set(['TRANS_PAC','TRANS_ATL','ASIA_EUR','INTRA_ASIA']);
+
+function clearLayers(){allLayers.forEach(l=>map.removeLayer(l));allLayers=[];}
+
+// ══ Icon factories ══
+function containerIcon(color, size, pulse){
+  const p = pulse ? `<circle cx="10" cy="10" r="${size+5}" fill="${color}" opacity="0.12"/>` : '';
+  const svg=`<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'>${p}<circle cx='10' cy='10' r='${size}' fill='${color}' opacity='0.92'/><circle cx='10' cy='10' r='${size*0.45}' fill='white' opacity='0.55'/></svg>`;
+  return L.divIcon({html:svg,className:'',iconSize:[20,20],iconAnchor:[10,10]});
 }
 
-function makeIcon(color, size, pulse) {
-  const r = size, inner = size * 0.45;
-  const pulseCircle = pulse
-    ? `<circle cx="10" cy="10" r="${r+5}" fill="${color}" opacity="0.12"/>`
+function portIcon(){
+  const svg=`<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'><rect x='1' y='1' width='6' height='6' rx='1' fill='rgba(232,244,246,0.1)' stroke='rgba(232,244,246,0.35)' stroke-width='1'/></svg>`;
+  return L.divIcon({html:svg,className:'',iconSize:[8,8],iconAnchor:[4,4]});
+}
+
+function conflictIcon(severity){
+  // Pulsating orange/red triangle — distinct from container circles
+  const col = severity==='CRITICAL' ? '#FF2D2D' : '#FF6B00';
+  const pulse = severity==='CRITICAL'
+    ? `<circle cx="12" cy="12" r="14" fill="${col}" opacity="0.15" class="conflict-pulse"/>`
     : '';
-  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'>
-    ${pulseCircle}
-    <circle cx='10' cy='10' r='${r}' fill='${color}' opacity='0.92'/>
-    <circle cx='10' cy='10' r='${inner}' fill='white' opacity='0.55'/>
-  </svg>`;
-  return L.divIcon({ html: svg, className: '', iconSize: [20, 20], iconAnchor: [10, 10] });
+  const svg=`<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'>${pulse}<polygon points='12,2 22,21 2,21' fill='${col}' opacity='0.92' stroke='white' stroke-width='1'/><text x='12' y='16' text-anchor='middle' font-size='9' font-weight='bold' fill='white'>!</text></svg>`;
+  return L.divIcon({html:svg,className:'',iconSize:[24,24],iconAnchor:[12,21]});
 }
 
-function portIcon() {
-  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'>
-    <rect x='1' y='1' width='6' height='6' rx='1' fill='rgba(232,244,246,0.08)' stroke='rgba(232,244,246,0.28)' stroke-width='1'/>
-  </svg>`;
-  return L.divIcon({ html: svg, className: '', iconSize: [8, 8], iconAnchor: [4, 4] });
-}
-
-function waypointIcon(color) {
-  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'>
-    <circle cx='4' cy='4' r='3' fill='${color}' opacity='0.5'/>
-  </svg>`;
-  return L.divIcon({ html: svg, className: '', iconSize: [8, 8], iconAnchor: [4, 4] });
-}
-
-function buildPopup(d, route) {
-  const sc  = STATUS_COLOR[d.action_status] || '#0A9396';
-  const dtl = Number(d.days_to_lfd || 0);
-  const dtlCls = dtl <= 0 ? 'red' : dtl <= 2 ? 'amber' : 'teal';
-  const dtlStr = (dtl >= 0 ? '+' : '') + dtl.toFixed(1) + 'd';
-  const burn = Number(d.burn_rate_usd || 0);
-  const pct  = Number(d.voyage_pct || 50);
-  const progCol = pct >= 80 ? '#E05252' : pct >= 60 ? '#D4A030' : '#0A9396';
+// ══ Popup builders ══
+function buildContainerPopup(d){
+  const sc  = STATUS_COLOR[d.action_status]||'#0A9396';
+  const dtl = Number(d.days_to_lfd||0);
+  const dtlCls = dtl<=0?'red':dtl<=2?'amber':'teal';
+  const pct = Number(d.voyage_pct||50);
+  const progCol = pct>=80?'#E05252':pct>=60?'#D4A030':'#0A9396';
+  const pen = Number(d.burn_rate_usd||0);
+  const vessel = d.vessel_name || d.berthed_vessel || '—';
   return `<div class="popup-inner">
-    <div class="pop-id">${d.container_id || '—'}</div>
-    <div class="pop-vessel">${d.vessel_name || '—'}</div>
-    <span class="pop-stg ${d.lifecycle_stage || 'AT_SEA'}">${STAGE_LABEL[d.lifecycle_stage] || d.lifecycle_stage}</span>
+    <div class="pop-id">${d.container_id}</div>
+    <div class="pop-vessel">${vessel}</div>
+    <span class="pop-stg ${d.lifecycle_stage}">${STAGE_LABEL[d.lifecycle_stage]||d.lifecycle_stage}</span>
     <div class="pop-rows">
-      <div class="pop-row"><div class="pop-key">Route</div><div class="pop-val">${d.origin_locode || '?'} → ${d.dest_locode || '?'}</div></div>
-      <div class="pop-row"><div class="pop-key">Lane</div><div class="pop-val">${(d.trade_lane_label||d.trade_lane||'—')}</div></div>
-      <div class="pop-row"><div class="pop-key">Lease</div><div class="pop-val">${d.lease_type || '—'}</div></div>
-      <div class="pop-row"><div class="pop-key">Buffer</div><div class="pop-val ${dtlCls}">${dtlStr}</div></div>
-      <div class="pop-row"><div class="pop-key">Exposure</div><div class="pop-val ${dtl <= 0 ? 'red' : ''}">${dtl <= 0 ? '$' + Math.round(burn).toLocaleString() + ' penalty' : '$' + (d.per_diem_rate || 0) + '/day'}</div></div>
-      <div class="pop-row"><div class="pop-key">Status</div><div class="pop-val" style="color:${sc}">${d.action_status || '—'}</div></div>
+      <div class="pop-row"><div class="pop-key">Route</div><div class="pop-val">${d.origin_locode}→${d.dest_locode}</div></div>
+      <div class="pop-row"><div class="pop-key">Lane</div><div class="pop-val">${d.trade_lane_label||d.trade_lane||'—'}</div></div>
+      <div class="pop-row"><div class="pop-key">Lease</div><div class="pop-val">${d.lease_type||'—'}</div></div>
+      <div class="pop-row"><div class="pop-key">Buffer</div><div class="pop-val ${dtlCls}">${dtl>=0?'+':''}${dtl.toFixed(1)}d</div></div>
+      <div class="pop-row"><div class="pop-key">Exposure</div><div class="pop-val ${dtl<=0?'red':''}">${dtl<=0?'$'+Math.round(pen).toLocaleString()+' penalty':'$'+(d.per_diem_rate||0)+'/day'}</div></div>
+      <div class="pop-row"><div class="pop-key">7d Forecast</div><div class="pop-val amber">$${Math.round(d.projected_exposure_7d_usd||0).toLocaleString()}</div></div>
+      <div class="pop-row"><div class="pop-key">Strategy</div><div class="pop-val" style="font-size:9px;color:var(--teal)">${d.repo_strategy||'—'}</div></div>
+      <div class="pop-row"><div class="pop-key">Status</div><div class="pop-val" style="color:${sc}">${d.action_status}</div></div>
     </div>
     <div class="pop-prog-wrap">
-      <div class="pop-prog-lbl"><span>Voyage progress</span><span>${pct}%</span></div>
+      <div class="pop-prog-lbl"><span>Voyage</span><span>${pct}%</span></div>
       <div class="pop-prog-track"><div class="pop-prog-fill" style="width:${pct}%;background:${progCol}"></div></div>
     </div>
   </div>`;
 }
 
-function render() {
+function buildConflictPopup(zone){
+  const col = zone.severity==='CRITICAL'?'#FF2D2D':'#FF6B00';
+  const rows = Object.entries(zone.data).map(([k,v])=>
+    `<div class="ct-row"><span class="ct-key">${k}</span><span class="ct-val ${k.includes('Risk')||k.includes('Status')?'danger':''}">${v}</span></div>`
+  ).join('');
+  return `<div class="conflict-tooltip">
+    <div class="ct-title">⚠ ${zone.name}</div>
+    ${rows}
+    <div style="margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,107,0,.3);font-size:8px;color:rgba(232,244,246,.45)">${zone.advisory}</div>
+  </div>`;
+}
+
+// ══ Render ══
+function render(){
   clearLayers();
 
-  const visible = DATA.filter(d =>
+  const visible = DATA.filter(d=>
     activeStatus.has(d.action_status) &&
     activeStage.has(d.lifecycle_stage) &&
     activeLane.has(d.trade_lane)
@@ -342,157 +358,152 @@ function render() {
 
   const portsShown = new Set();
 
-  visible.forEach(d => {
-    const origin  = d.origin_locode;
-    const dest    = d.dest_locode;
-    const oPos    = PORTS[origin];
-    const dPos    = PORTS[dest];
-    const route   = getRoute(origin, dest);
-    const isCrit  = d.action_status === 'Critical';
-    const color   = STATUS_COLOR[d.action_status] || '#0A9396';
-    const pct     = Number(d.voyage_pct || 0) / 100;
+  visible.forEach(d=>{
+    const o   = d.origin_locode, dest = d.dest_locode;
+    const oPos = PORTS[o], dPos = PORTS[dest];
+    const route = getRoute(o, dest);
+    const color = STATUS_COLOR[d.action_status]||'#0A9396';
+    const pct   = Math.max(0, Math.min(1, Number(d.voyage_pct||0)/100));
 
-    // ── Draw ocean route arc ──────────────────────────────────────────────
-    if (route.length >= 2) {
+    // ── Route line (clean, no trail dots) ──────────────────────────────────
+    if (route && route.length >= 2) {
+      const isCrit = d.action_status==='Critical';
       const line = L.polyline(route, {
-        color:     isCrit ? '#E05252' : d.action_status === 'Warning' ? '#D4A030' : 'rgba(10,147,150,0.55)',
-        weight:    isCrit ? 1.5 : 1,
-        opacity:   isCrit ? 0.75 : 0.4,
-        dashArray: isCrit ? '7,4' : null,
+        color:     isCrit?'#E05252':d.action_status==='Warning'?'#D4A030':'rgba(10,147,150,0.45)',
+        weight:    isCrit?1.5:1,
+        opacity:   isCrit?0.65:0.35,
+        dashArray: null,  // no dashes — clean lines only
       }).addTo(map);
       allLayers.push(line);
 
-      // Show port squares at origin and destination
-      [oPos && origin, dPos && dest].forEach(code => {
-        if (code && !portsShown.has(code)) {
-          portsShown.add(code);
-          const pos = PORTS[code];
-          const pm  = L.marker(pos, { icon: portIcon(), interactive: false }).addTo(map);
-          allLayers.push(pm);
-        }
-      });
-
-      // ── Voyage trail waypoints ──────────────────────────────────────────
-      // Show where the container HAS BEEN — dots at 25%, 50%, 75% if already passed
-      [0.25, 0.5, 0.75].forEach(milestone => {
-        if (pct >= milestone) {
-          const pos = posAtFraction(route, milestone);
-          if (pos) {
-            const wm = L.marker(pos, {
-              icon: waypointIcon(color),
-              interactive: false,
-            }).addTo(map);
-            allLayers.push(wm);
-          }
-        }
+      // Port squares at origin + destination only
+      [o, dest].forEach(code=>{
+        if(!PORTS[code]||portsShown.has(code)) return;
+        portsShown.add(code);
+        allLayers.push(L.marker(PORTS[code],{icon:portIcon(),interactive:false}).addTo(map));
       });
     }
 
-    // ── Container position dot ────────────────────────────────────────────
-    let lat = Number(d.current_lat || 0);
-    let lon = Number(d.current_lon || 0);
+    // ── Container position dot ──────────────────────────────────────────────
+    let lat = Number(d.current_lat||0), lon = Number(d.current_lon||0);
 
-    // Validate the stored position is in the ocean (not 0,0 or at port coords exactly)
-    const isAtOriginPort = oPos && Math.abs(lat - oPos[0]) < 0.5 && Math.abs(lon - oPos[1]) < 0.5;
-    const isAtDestPort   = dPos && Math.abs(lat - dPos[0]) < 0.5 && Math.abs(lon - dPos[1]) < 0.5;
-    const isZero         = Math.abs(lat) < 0.1 && Math.abs(lon) < 0.1;
-
-    // For containers at sea, prefer computing position from route geometry
-    // This guarantees ocean placement even when state has a stale/wrong coordinate
-    if (d.lifecycle_stage === 'AT_SEA' && route.length >= 2 && (isAtOriginPort || isAtDestPort || isZero)) {
-      const pos = posAtFraction(route, Math.max(0.05, Math.min(0.95, pct)));
-      if (pos) { lat = pos[0]; lon = pos[1]; }
-    } else if (d.lifecycle_stage === 'AT_SEA' && route.length >= 2) {
-      // Use route geometry for all AT_SEA containers to ensure ocean placement
-      const routePos = posAtFraction(route, Math.max(0.05, Math.min(0.95, pct)));
-      if (routePos) { lat = routePos[0]; lon = routePos[1]; }
+    // For AT_SEA: always compute from route geometry for accurate ocean placement
+    if (d.lifecycle_stage==='AT_SEA' && route) {
+      const pos = lerp(route, Math.max(0.02, Math.min(0.98, pct)));
+      if (pos) { lat=pos[0]; lon=pos[1]; }
     }
 
-    if (Math.abs(lat) < 0.1 && Math.abs(lon) < 0.1) return; // skip 0,0
+    // Port stages: snap to port coordinates
+    if (['GATE_IN'].includes(d.lifecycle_stage) && oPos) { lat=oPos[0]; lon=oPos[1]; }
+    if (['ARRIVED','IN_FREE_DAYS','OVERDUE'].includes(d.lifecycle_stage) && dPos) { lat=dPos[0]; lon=dPos[1]; }
 
-    const sz    = d.lifecycle_stage === 'AT_SEA' ? 6 : 5;
-    const pulse = isCrit;
+    if (Math.abs(lat)<0.1 && Math.abs(lon)<0.1) return;
 
-    const marker = L.marker([lat, lon], {
-      icon:        makeIcon(color, sz, pulse),
-      zIndexOffset: isCrit ? 1000 : d.lifecycle_stage === 'AT_SEA' ? 500 : 0,
+    const sz    = d.lifecycle_stage==='AT_SEA'?6:5;
+    const pulse = d.action_status==='Critical';
+
+    const marker = L.marker([lat,lon],{
+      icon:L.divIcon({
+        html: (()=>{
+          const p = pulse?`<circle cx="10" cy="10" r="${sz+5}" fill="${color}" opacity="0.12"/>`:''
+          return `<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'>${p}<circle cx='10' cy='10' r='${sz}' fill='${color}' opacity='0.92'/><circle cx='10' cy='10' r='${sz*0.45}' fill='white' opacity='0.55'/></svg>`;
+        })(),
+        className:'',iconSize:[20,20],iconAnchor:[10,10]
+      }),
+      zIndexOffset: pulse?1000:d.lifecycle_stage==='AT_SEA'?500:0,
     })
-    .bindPopup(buildPopup(d, route), { maxWidth: 250, className: 'rs-popup' })
+    .bindPopup(buildContainerPopup(d),{maxWidth:260})
     .addTo(map);
     allLayers.push(marker);
+  });
+
+  // ── Conflict zone markers (always shown, on top) ────────────────────────
+  CONFLICT_ZONES.forEach(zone=>{
+    const icon = conflictIcon(zone.severity);
+    const col  = zone.severity==='CRITICAL'?'#FF2D2D':'#FF6B00';
+    // Pulsating ring around the marker
+    const ring = L.circle([zone.lat, zone.lon], {
+      radius:     zone.severity==='CRITICAL'?180000:120000,
+      color:      col,
+      fillColor:  col,
+      fillOpacity:0.06,
+      weight:     1.5,
+      opacity:    0.45,
+      dashArray:  '6,4',
+    }).addTo(map);
+    allLayers.push(ring);
+
+    const m = L.marker([zone.lat, zone.lon],{icon, zIndexOffset:2000})
+      .bindPopup(buildConflictPopup(zone),{maxWidth:280,className:''})
+      .addTo(map);
+    allLayers.push(m);
   });
 
   renderKPIs(visible);
 }
 
-function renderKPIs(visible) {
+function renderKPIs(visible){
   const all  = DATA;
-  const crit = all.filter(d => d.action_status === 'Critical').length;
-  const warn = all.filter(d => d.action_status === 'Warning').length;
-  const safe = all.filter(d => d.action_status === 'Safe').length;
-  const pen  = all.filter(d => d.days_to_lfd <= 0).reduce((s,d) => s + Number(d.burn_rate_usd || 0), 0);
-  const atSea= all.filter(d => d.lifecycle_stage === 'AT_SEA').length;
-  const avg  = all.length ? (all.reduce((s,d) => s + Number(d.days_to_lfd || 0), 0) / all.length).toFixed(1) : 0;
+  const crit = all.filter(d=>d.action_status==='Critical').length;
+  const warn = all.filter(d=>d.action_status==='Warning').length;
+  const safe = all.filter(d=>d.action_status==='Safe').length;
+  const pen  = all.filter(d=>(d.days_to_lfd||0)<=0).reduce((s,d)=>s+Number(d.burn_rate_usd||0),0);
+  const proj = all.reduce((s,d)=>s+Number(d.projected_exposure_7d_usd||0),0);
   const kpis = [
-    { l:'Critical', v:crit, c:'red',   s:'penalty accruing' },
-    { l:'Warning',  v:warn, c:'amber', s:'≤ 2d buffer' },
-    { l:'Safe',     v:safe, c:'teal',  s:'buffer > 2d' },
-    { l:'Penalty',  v:'$'+Math.round(pen).toLocaleString(), c:'', s:'USD today' },
-    { l:'At Sea',   v:atSea, c:'teal', s:'underway now' },
-    { l:'Showing',  v:visible.length+'/'+all.length, c:'', s:'on map' },
+    {l:'Critical',   v:crit,                              c:'red',    s:'penalty accruing'},
+    {l:'Warning',    v:warn,                              c:'amber',  s:'≤ 2d buffer'},
+    {l:'Safe',       v:safe,                              c:'teal',   s:'buffer > 2d'},
+    {l:'Penalty',    v:'$'+Math.round(pen).toLocaleString(),c:'',    s:'USD today'},
+    {l:'7d Forecast',v:'$'+Math.round(proj).toLocaleString(),c:'red',s:'projected'},
+    {l:'Conflict Zones',v:CONFLICT_ZONES.length,         c:'orange', s:'active Apr 2026'},
+    {l:'Showing',    v:visible.length+'/'+all.length,    c:'',       s:'on map'},
   ];
   document.getElementById('kpi-strip').innerHTML =
-    kpis.map(k => `<div class="kpi-cell"><div class="kpi-lbl">${k.l}</div><div class="kpi-val ${k.c}">${k.v}</div><div class="kpi-sub">${k.s}</div></div>`).join('') +
-    '<div class="kpi-cell fill"></div>';
+    kpis.map(k=>`<div class="kpi-cell"><div class="kpi-lbl">${k.l}</div><div class="kpi-val ${k.c}">${k.v}</div><div class="kpi-sub">${k.s}</div></div>`).join('');
 }
 
-document.querySelectorAll('.fp-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const f = btn.dataset.filter, v = btn.dataset.val;
-    const s = f === 'status' ? activeStatus : f === 'stage' ? activeStage : activeLane;
-    if (s.has(v)) { s.delete(v); btn.classList.remove('on'); }
-    else          { s.add(v);    btn.classList.add('on'); }
+document.querySelectorAll('.fp-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const f=btn.dataset.filter, v=btn.dataset.val;
+    const s=f==='status'?activeStatus:f==='stage'?activeStage:activeLane;
+    if(s.has(v)){s.delete(v);btn.classList.remove('on');}else{s.add(v);btn.classList.add('on');}
     render();
   });
 });
 
-async function doRefresh() {
-  const btn = document.getElementById('map-refresh');
-  btn.textContent = '⟳ Loading...'; btn.style.opacity = '.5';
+async function doRefresh(){
+  const btn=document.getElementById('map-refresh');
+  btn.textContent='⟳ Loading...';btn.style.opacity='.5';
   await loadData();
-  btn.textContent = '✓ Done';
-  setTimeout(() => { btn.textContent = '⟳ Refresh'; btn.style.opacity = '1'; }, 2000);
+  btn.textContent='✓ Done';
+  setTimeout(()=>{btn.textContent='⟳ Refresh';btn.style.opacity='1';},2000);
 }
 
-async function loadData() {
-  try {
-    const [dr, sr] = await Promise.all([
-      fetch('./data/gold/containers.json?t=' + Date.now()),
-      fetch('./data/gold/summary.json?t='    + Date.now()),
+async function loadData(){
+  try{
+    const[dr,sr]=await Promise.all([
+      fetch('./data/gold/containers.json?t='+Date.now()),
+      fetch('./data/gold/summary.json?t='+Date.now()),
     ]);
-    DATA = await dr.json();
-    const sum = await sr.json();
-    document.getElementById('run-ts').textContent =
-      'Run #' + (sum.run_count || '?') + ' · ' + (sum.generated_at || '').slice(0, 16).replace('T', ' ') + ' UTC';
-  } catch(e) {
-    DATA = FALLBACK;
-    document.getElementById('run-ts').textContent = 'Offline · sample';
+    DATA=await dr.json();
+    const sum=await sr.json();
+    document.getElementById('run-ts').textContent='Run #'+(sum.run_count||'?')+' · '+(sum.generated_at||'').slice(0,16).replace('T',' ')+' UTC';
+  }catch(e){
+    DATA=FALLBACK;
+    document.getElementById('run-ts').textContent='Offline · sample';
   }
   render();
 }
 
-// Sample data for offline mode
-const FALLBACK = [
-  { container_id:'MSKU9082341', trade_lane:'TRANS_PAC', trade_lane_label:'Trans-Pacific', lifecycle_stage:'AT_SEA', vessel_name:'Maersk Antares', origin_locode:'CNSHA', dest_locode:'USLAX', days_to_lfd:-3.2, per_diem_rate:150, burn_rate_usd:480, action_status:'Critical', voyage_pct:55, current_lat:40.5, current_lon:-168.0 },
-  { container_id:'TCKU3041892', trade_lane:'TRANS_ATL', trade_lane_label:'Trans-Atlantic', lifecycle_stage:'IN_FREE_DAYS', vessel_name:'MSC Eloane', origin_locode:'NLRTM', dest_locode:'USNYC', days_to_lfd:1.5, per_diem_rate:130, burn_rate_usd:130, action_status:'Warning', voyage_pct:91, current_lat:40.5, current_lon:-74.2 },
-  { container_id:'CMAU4719230', trade_lane:'ASIA_EUR',  trade_lane_label:'Asia-Europe', lifecycle_stage:'AT_SEA', vessel_name:'OOCL Hong Kong', origin_locode:'CNSHA', dest_locode:'NLRTM', days_to_lfd:8.4, per_diem_rate:85, burn_rate_usd:85, action_status:'Safe', voyage_pct:45, current_lat:5.0, current_lon:75.0 },
-  { container_id:'HLXU2834019', trade_lane:'INTRA_ASIA', trade_lane_label:'Intra-Asia', lifecycle_stage:'GATE_IN', vessel_name:'Wan Hai 307', origin_locode:'TWKHH', dest_locode:'SGSIN', days_to_lfd:22.1, per_diem_rate:40, burn_rate_usd:40, action_status:'Safe', voyage_pct:5, current_lat:22.5, current_lon:120.1 },
-  { container_id:'SUDU4820931', trade_lane:'TRANS_ATL', trade_lane_label:'Trans-Atlantic', lifecycle_stage:'OVERDUE', vessel_name:'MSC Eloane', origin_locode:'NLRTM', dest_locode:'USNYC', days_to_lfd:-6.5, per_diem_rate:130, burn_rate_usd:845, action_status:'Critical', voyage_pct:96, current_lat:40.5, current_lon:-74.2 },
-  { container_id:'OOLU8471023', trade_lane:'ASIA_EUR',  trade_lane_label:'Asia-Europe', lifecycle_stage:'AT_SEA', vessel_name:'OOCL Europe', origin_locode:'CNSHA', dest_locode:'NLRTM', days_to_lfd:-1.8, per_diem_rate:155, burn_rate_usd:279, action_status:'Critical', voyage_pct:70, current_lat:12.0, current_lon:48.0 },
+const FALLBACK=[
+  {container_id:'MSKU9082341',trade_lane:'TRANS_PAC',trade_lane_label:'Trans-Pacific',lifecycle_stage:'AT_SEA',vessel_name:'Maersk Antares',origin_locode:'CNSHA',dest_locode:'USLAX',days_to_lfd:-3.2,per_diem_rate:150,burn_rate_usd:480,action_status:'Critical',voyage_pct:55,projected_exposure_7d_usd:1530,repo_strategy:'URGENT — Clear Terminal'},
+  {container_id:'TCKU3041892',trade_lane:'TRANS_ATL',trade_lane_label:'Trans-Atlantic',lifecycle_stage:'IN_FREE_DAYS',vessel_name:'MSC Eloane',origin_locode:'NLRTM',dest_locode:'USNYC',days_to_lfd:1.5,per_diem_rate:130,burn_rate_usd:130,action_status:'Warning',voyage_pct:100,projected_exposure_7d_usd:780,repo_strategy:'One-Way Lease Match'},
+  {container_id:'CMAU4719230',trade_lane:'ASIA_EUR',trade_lane_label:'Asia-Europe',lifecycle_stage:'AT_SEA',vessel_name:'OOCL Hong Kong',origin_locode:'CNSHA',dest_locode:'NLRTM',days_to_lfd:8.4,per_diem_rate:85,burn_rate_usd:85,action_status:'Safe',voyage_pct:45,projected_exposure_7d_usd:0,repo_strategy:'N/A — In Transit'},
+  {container_id:'SUDU4820931',trade_lane:'TRANS_ATL',trade_lane_label:'Trans-Atlantic',lifecycle_stage:'OVERDUE',vessel_name:'MSC Eloane',origin_locode:'NLRTM',dest_locode:'USNYC',days_to_lfd:-6.5,per_diem_rate:130,burn_rate_usd:845,action_status:'Critical',voyage_pct:100,projected_exposure_7d_usd:1755,repo_strategy:'URGENT — Clear Terminal'},
 ];
 
 loadData();
-setInterval(loadData, 5 * 60 * 1000);
+setInterval(loadData,5*60*1000);
 </script>
 </body>
 </html>
