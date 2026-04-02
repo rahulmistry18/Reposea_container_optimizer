@@ -258,6 +258,19 @@ def _spawn(seed: str, force_stage: str = None) -> dict:
 # ── Advance a container by elapsed hours ─────────────────────────────────────
 
 def _advance(c: dict, hours: float) -> dict:
+    """
+    Advance container state by `hours` elapsed real time.
+
+    Vessel retention rule (industrial practice):
+      • GATE_IN / AT_SEA    → vessel active, show vessel_name + imo
+      • ARRIVED / IN_FREE_DAYS / OVERDUE → vessel has berthed and departed.
+        We retain vessel_name as "berthed_vessel" for historical reference
+        but current_loc shows the port terminal, not the ship.
+
+    Penalty rule (time-based, not recalculated from scratch each run):
+      • New_Penalty = Previous_Penalty + (hours_elapsed / 24 * per_diem)
+      • Triggered only when (LFD - NOW) < 0
+    """
     c     = dict(c)
     now   = datetime.now(timezone.utc)
     lfd   = datetime.fromisoformat(c["lfd_iso"])
@@ -266,72 +279,93 @@ def _advance(c: dict, hours: float) -> dict:
     gate  = c["gate_in_hours"]
     origin= c["origin_locode"]
     dest  = c["dest_locode"]
-    vname = c["vessel_name"]
 
+    # Preserve vessel identity throughout — read once, never clear
+    # Priority: vessel_name > berthed_vessel (set when vessel departed port)
+    vessel_name = (c.get("vessel_name") or "").strip() or c.get("berthed_vessel", "")
+    imo_number  = c.get("imo_number") or 0
+    # Backfill berthed_vessel if vessel_name is known (ensures it's always set)
+    if vessel_name and not c.get("berthed_vessel"):
+        c["berthed_vessel"] = vessel_name
+
+    c["last_updated"]        = now.isoformat()
     c["stage_hours_elapsed"] = c.get("stage_hours_elapsed", 0) + hours
     c["total_hours_elapsed"] = c.get("total_hours_elapsed", 0) + hours
 
-    # ── GATE_IN ──────────────────────────────────────────────────────────────
+    # ── GATE_IN ───────────────────────────────────────────────────────────────
     if stage == "GATE_IN":
         if c["stage_hours_elapsed"] >= gate:
-            overshoot             = c["stage_hours_elapsed"] - gate
-            c["lifecycle_stage"]  = "AT_SEA"
+            overshoot                = c["stage_hours_elapsed"] - gate
+            c["lifecycle_stage"]     = "AT_SEA"
             c["stage_hours_elapsed"] = overshoot
-            c["speed_knots"]      = round(random.uniform(14, 22), 1)
+            c["speed_knots"]         = round(random.uniform(14, 22), 1)
             stage = "AT_SEA"
         else:
             c["current_lat"], c["current_lon"] = PORT_COORDS.get(origin, (0.0, 0.0))
-            c["current_loc"] = origin
-            c["speed_knots"] = 0.0
+            c["current_loc"]  = f"Origin terminal — {origin}"
+            c["speed_knots"]  = 0.0
+            # Vessel assigned but not yet underway — show as "loading"
+            c["vessel_name"]  = vessel_name
+            c["imo_number"]   = imo_number
 
-    # ── AT_SEA ───────────────────────────────────────────────────────────────
+    # ── AT_SEA ────────────────────────────────────────────────────────────────
     if stage == "AT_SEA":
         progress = min(1.0, c["stage_hours_elapsed"] / max(trans, 1))
         lat, lon = _lerp_pos(origin, dest, progress)
-        c["current_lat"] = lat
-        c["current_lon"] = lon
-        c["current_loc"] = f"At Sea ({vname})"
-        c["speed_knots"] = round(random.uniform(14, 22), 1)
+        c["current_lat"]  = lat
+        c["current_lon"]  = lon
+        c["current_loc"]  = f"At Sea ({vessel_name})"
+        c["speed_knots"]  = round(random.uniform(14, 22), 1)
+        c["vessel_name"]  = vessel_name
+        c["imo_number"]   = imo_number
 
         if c["stage_hours_elapsed"] >= trans:
-            overshoot             = c["stage_hours_elapsed"] - trans
-            c["lifecycle_stage"]  = "ARRIVED"
+            overshoot                = c["stage_hours_elapsed"] - trans
+            c["lifecycle_stage"]     = "ARRIVED"
             c["stage_hours_elapsed"] = overshoot
             c["current_lat"], c["current_lon"] = PORT_COORDS.get(dest, (0.0, 0.0))
-            c["current_loc"] = dest
-            c["speed_knots"] = 0.0
-            # Vessel has berthed and discharged — release the vessel reference
-            # Container is now at the terminal; vessel goes to its next voyage
-            c["berthed_vessel"]   = c.get("vessel_name", "")   # remember for records
-            c["vessel_name"]      = ""                          # no vessel at terminal
-            c["imo_number"]       = 0
+            c["current_loc"]  = f"Arrived — {dest}"
+            c["speed_knots"]  = 0.0
+            # Save the delivering vessel for historical reference
+            c["berthed_vessel"] = vessel_name
             stage = "ARRIVED"
 
-    # ── ARRIVED ──────────────────────────────────────────────────────────────
+    # ── ARRIVED ───────────────────────────────────────────────────────────────
     if stage == "ARRIVED":
-        c["current_loc"] = dest
-        c["speed_knots"] = 0.0
-        c["vessel_name"] = ""   # vessel has berthed, discharged, and departed
-        c["imo_number"]  = 0
+        c["current_loc"]  = f"Arrived — {dest}"
+        c["speed_knots"]  = 0.0
+        # FIX: retain vessel fields — do NOT null them. Container records must
+        # show which vessel delivered it for audit and demurrage claim purposes.
+        c["vessel_name"]  = vessel_name
+        c["imo_number"]   = imo_number
+
         if c["stage_hours_elapsed"] >= 12:
             c["lifecycle_stage"]     = "IN_FREE_DAYS"
             c["stage_hours_elapsed"] = 0
             stage = "IN_FREE_DAYS"
 
-    # ── IN_FREE_DAYS / OVERDUE ───────────────────────────────────────────────
+    # ── IN_FREE_DAYS / OVERDUE ────────────────────────────────────────────────
     if stage in ("IN_FREE_DAYS", "OVERDUE"):
-        c["current_loc"] = dest   # at terminal — no vessel
-        c["speed_knots"] = 0.0
-        c["vessel_name"] = ""     # ensure vessel is cleared at terminal
-        c["imo_number"]  = 0
-        buffer_days = (lfd - now).total_seconds() / 86400
+        c["current_loc"]  = f"Terminal — {dest}"
+        c["speed_knots"]  = 0.0
+        # FIX: retain vessel_name for audit trail even at terminal
+        c["vessel_name"]  = vessel_name
+        c["imo_number"]   = imo_number
 
-        if buffer_days <= 0:
+        buffer_seconds = (lfd - now).total_seconds()
+
+        if buffer_seconds <= 0:
+            # TIME-BASED PENALTY: accumulate from previous run, not recalculate from scratch.
+            # New_Penalty = Previous_Penalty + (hours_elapsed / 24 × per_diem_rate)
+            # This prevents penalty "jumping" when run_count or sim_ts differs slightly.
+            prev_penalty   = float(c.get("penalty_accrued_usd", 0) or 0)
+            penalty_delta  = (hours / 24.0) * float(c["per_diem_rate"])
+            c["penalty_accrued_usd"] = round(prev_penalty + penalty_delta, 2)
             c["lifecycle_stage"]     = "OVERDUE"
-            overdue_days             = abs(buffer_days)
-            c["penalty_accrued_usd"] = round(overdue_days * c["per_diem_rate"], 2)
-            # Randomly resolve very overdue containers (simulate commercial resolution)
-            if overdue_days > 10 and random.random() < 0.12:
+
+            # Simulate commercial resolution of very overdue containers (10% chance past 10d)
+            overdue_days = abs(buffer_seconds) / 86400
+            if overdue_days > 10 and random.random() < 0.10:
                 c["lifecycle_stage"] = "COMPLETE"
                 c["completed_at"]    = now.isoformat()
         else:

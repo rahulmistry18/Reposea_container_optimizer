@@ -126,17 +126,19 @@ def _assign_vessels(fleet: list, live_vessels: list) -> list:
         existing_vessel = c.get("vessel_name", "").strip()
         existing_imo    = str(c.get("imo_number", ""))
 
-        # ── CASE 0: Container is at terminal (post-berthing) — no vessel ────────
+        # ── CASE 0: Container at terminal (post-berthing) ─────────────────────
         stage = c.get("lifecycle_stage", "GATE_IN")
         if stage in ("ARRIVED", "IN_FREE_DAYS", "OVERDUE", "COMPLETE"):
-            # Vessel has berthed and departed. Container is at port terminal.
-            # Clear any residual vessel reference and mark location as port.
+            # Vessel has delivered the container and departed.
+            # Retain vessel_name for audit trail (which vessel delivered this container).
+            # Use berthed_vessel if vessel_name was cleared previously.
+            retained_vessel = c.get("vessel_name") or c.get("berthed_vessel", "")
             dest_code = c.get("dest_locode", "")
             c = {**c,
-                 "vessel_name":    "",
-                 "imo_number":     0,
+                 "vessel_name":    retained_vessel,
+                 "imo_number":     c.get("imo_number") or 0,
                  "current_loc":    LOCATION_LABELS.get(dest_code, dest_code),
-                 "_vessel_source": "none_at_terminal",
+                 "_vessel_source": "retained_delivering_vessel",
             }
             enriched.append(c)
             continue

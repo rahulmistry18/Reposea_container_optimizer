@@ -101,13 +101,29 @@ def classify_status(buffer: float) -> str:
 
 def calculate_burn_rate(row: pd.Series) -> float:
     """
-    If Critical: total penalty accrued = per_diem × abs(days_over_lfd)
-    If Warning/Safe: daily rate exposure = per_diem (the daily cost if it tips over)
+    Burn rate — single source of truth:
+
+      OVERDUE  → state_manager.penalty_accrued_usd (time-based incremental accumulation)
+                 Formula: prev_penalty + (hours_elapsed/24 × per_diem) each run
+                 This is the ONLY value used — never recalculated from days_to_lfd.
+      Warning  → per_diem rate (daily exposure if container tips over)
+      Safe     → per_diem rate (monitoring)
     """
-    per_diem = float(row["per_diem_rate"])
-    days_over = float(row["days_to_lfd"])
-    if days_over <= 0:
-        return round(per_diem * abs(days_over), 2)
+    per_diem  = float(row.get("per_diem_rate", 0))
+    days_over = float(row.get("days_to_lfd", 0))
+    stage     = str(row.get("lifecycle_stage", ""))
+    state_pen = row.get("penalty_accrued_usd_state")
+
+    if days_over <= 0 or stage == "OVERDUE":
+        # Always use incrementally accumulated state penalty — never recalculate
+        if state_pen is not None:
+            val = float(state_pen)
+            if val > 0:
+                return round(val, 2)
+        # Fallback only if state penalty is missing (shouldn't happen after run 1)
+        return round(per_diem * abs(min(days_over, 0)), 2)
+
+    # Not overdue: show daily rate as exposure indicator
     return round(per_diem, 2)
 
 
@@ -337,25 +353,28 @@ def build_gold(silver: pd.DataFrame) -> pd.DataFrame:
     df["pipeline_run_ts"] = df.apply(_sim_ts, axis=1)
     df["sim_run_count"]   = _run_count_for_ts
 
-    # Recompute days_to_lfd and burn_rate using simulated per-container time
-    # This ensures dtl advances by ~1 day per hour-increment in history
+    # Recompute days_to_lfd using simulated per-container time
+    # burn_rate_usd is NOT recalculated here — it must wait until after
+    # state enrichment sets penalty_accrued_usd_state (see below).
     sim_ts_series = pd.to_datetime(df["pipeline_run_ts"], utc=True, errors="coerce")
     df = calculate_buffer(df, sim_ts_series=sim_ts_series)
-    df["action_status"]          = df["days_to_lfd"].apply(classify_status)
-    df["burn_rate_usd"]          = df.apply(calculate_burn_rate, axis=1)
+    df["action_status"] = df["days_to_lfd"].apply(classify_status)
 
-    # (analytical columns computed after state enrichment below)
+    # (burn_rate_usd and analytical columns computed after state enrichment below)
 
-    # Enrich from fleet state: lifecycle_stage, lat/lon, voyage progress
+    # Enrich from fleet state: lifecycle_stage, lat/lon, voyage progress, penalty
     try:
         import json as _json
         from pathlib import Path as _P
         state_file = _P(__file__).parent.parent / "data" / "state" / "fleet_state.json"
         if state_file.exists():
             state_map = {c["container_id"]: c for c in _json.loads(state_file.read_text()).get("containers",[])}
-            df["lifecycle_stage"]     = df["container_id"].map(lambda x: state_map.get(x,{}).get("lifecycle_stage","AT_SEA"))
-            df["current_lat"]         = df["container_id"].map(lambda x: state_map.get(x,{}).get("current_lat",0.0))
-            df["current_lon"]         = df["container_id"].map(lambda x: state_map.get(x,{}).get("current_lon",0.0))
+            df["lifecycle_stage"]         = df["container_id"].map(lambda x: state_map.get(x,{}).get("lifecycle_stage","AT_SEA"))
+            df["current_lat"]             = df["container_id"].map(lambda x: state_map.get(x,{}).get("current_lat",0.0))
+            df["current_lon"]             = df["container_id"].map(lambda x: state_map.get(x,{}).get("current_lon",0.0))
+            # Pull time-accumulated penalty from state (not recalculated)
+            df["penalty_accrued_usd_state"] = df["container_id"].map(
+                lambda x: state_map.get(x,{}).get("penalty_accrued_usd", None))
             _stage_pct = {"GATE_IN":5,"ARRIVED":82,"IN_FREE_DAYS":91,"OVERDUE":96,"COMPLETE":100}
             df["voyage_pct"] = df["container_id"].map(
                 lambda x: round(min(100, state_map.get(x,{}).get("stage_hours_elapsed",0)
@@ -369,7 +388,10 @@ def build_gold(silver: pd.DataFrame) -> pd.DataFrame:
         df["current_lon"]     = 0.0
         df["voyage_pct"]      = 50.0
 
-    # ── Analytical columns (NOW with correct lifecycle_stage from state) ────────
+    # ── Final burn_rate + analytical columns ─────────────────────────────────
+    # burn_rate_usd MUST be here: penalty_accrued_usd_state is now populated
+    # from state enrichment above, so calculate_burn_rate can use it correctly.
+    df["burn_rate_usd"]             = df.apply(calculate_burn_rate, axis=1)
     df["projected_exposure_7d_usd"] = df.apply(projected_exposure_7d, axis=1)
     df["repo_strategy"]             = df.apply(repo_strategy, axis=1)
     df["priority_score"]            = df.apply(priority_score, axis=1)
