@@ -1,36 +1,36 @@
 {
-  "generated_at": "2026-04-02T08:23:38.223029+00:00",
+  "generated_at": "2026-04-02T08:24:46.562377+00:00",
   "run_count": 9,
   "total_containers": 35,
   "critical_count": 8,
   "warning_count": 3,
   "safe_count": 24,
-  "total_penalty_usd": 3333.88,
+  "total_penalty_usd": 3343.8,
   "avg_buffer_days": 10.5,
   "by_trade_lane": [
     {
       "trade_lane": "ASIA_EUR",
       "count": 10,
       "critical": 1,
-      "total_burn": 579.38
+      "total_burn": 579.46
     },
     {
       "trade_lane": "INTRA_ASIA",
       "count": 7,
       "critical": 1,
-      "total_burn": 381.73
+      "total_burn": 381.76
     },
     {
       "trade_lane": "TRANS_ATL",
       "count": 5,
       "critical": 2,
-      "total_burn": 196.56
+      "total_burn": 206.15
     },
     {
       "trade_lane": "TRANS_PAC",
       "count": 13,
       "critical": 4,
-      "total_burn": 2176.2100000000005
+      "total_burn": 2176.43
     }
   ],
   "by_lease_type": [
@@ -56,7 +56,7 @@
       "lease_type": "Master Lease",
       "trade_lane_label": "Trans-Pacific",
       "days_to_lfd": -8.68,
-      "burn_rate_usd": 739.47,
+      "burn_rate_usd": 739.55,
       "action_status": "Critical"
     },
     {
@@ -64,7 +64,7 @@
       "lease_type": "Master Lease",
       "trade_lane_label": "Trans-Pacific",
       "days_to_lfd": -10.68,
-      "burn_rate_usd": 695.44,
+      "burn_rate_usd": 695.5,
       "action_status": "Critical"
     },
     {
@@ -72,7 +72,7 @@
       "lease_type": "Long-Term",
       "trade_lane_label": "Trans-Pacific",
       "days_to_lfd": -13.68,
-      "burn_rate_usd": 618.02,
+      "burn_rate_usd": 618.06,
       "action_status": "Critical"
     },
     {
@@ -80,7 +80,7 @@
       "lease_type": "Long-Term",
       "trade_lane_label": "Intra-Asia",
       "days_to_lfd": -9.68,
-      "burn_rate_usd": 381.73,
+      "burn_rate_usd": 381.76,
       "action_status": "Critical"
     },
     {
@@ -88,7 +88,7 @@
       "lease_type": "Master Lease",
       "trade_lane_label": "Asia-Europe",
       "days_to_lfd": -6.68,
-      "burn_rate_usd": 579.38,
+      "burn_rate_usd": 579.46,
       "action_status": "Critical"
     }
   ]
