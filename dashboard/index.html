@@ -95,7 +95,7 @@ html,body{background:var(--abyss);color:var(--foam);font-family:var(--sans);font
 .seg-grp{display:flex;background:var(--depth1);border:1px solid var(--mist2);border-radius:2px;overflow:hidden}
 .seg{padding:5px 10px;font-family:var(--mono);font-size:10px;letter-spacing:.04em;cursor:pointer;color:rgba(232,244,246,.36);border:none;background:transparent;transition:all .15s;white-space:nowrap;text-transform:uppercase}
 .seg:hover{color:var(--foam2);background:var(--mist)}.seg.act{color:var(--teal);background:var(--teal-glow);border-bottom:1.5px solid var(--teal)}
-.fsel{background:var(--depth1);border:1px solid var(--mist2);border-radius:2px;padding:5px 22px 5px 8px;color:var(--foam2);font-family:var(--mono);font-size:10px;cursor:pointer;outline:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%234A8FA0'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 7px center;text-transform:uppercase;letter-spacing:.04em}
+.fsel{background:var(--depth1);border:1px solid var(--mist2);border-radius:2px;padding:5px 22px 5px 8px;color:var(--foam2);font-family:var(--mono);font-size:10px;cursor:pointer;outline:none;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%234A8FA0'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 7px center;text-transform:uppercase;letter-spacing:.04em}
 .fsel option{background:#071E2E}
 .sbox{background:var(--depth1);border:1px solid var(--mist2);border-radius:2px;padding:5px 9px;color:var(--foam);font-family:var(--mono);font-size:10px;outline:none;width:150px}
 .sbox::placeholder{color:rgba(232,244,246,.2)}.sbox:focus{border-color:var(--teal)}
@@ -575,91 +575,88 @@ function openJourney(cid, evt){
   if(evt) evt.stopPropagation();
   const container = D.find(d=>d.container_id===cid);
   if(!container) return;
-  const snaps = (H[cid]||[]).slice().reverse(); // newest first for table
+
+  // All snapshots for this container (history)
+  const allSnaps = H[cid] || [];
+  const snaps = allSnaps.slice().reverse(); // newest first for table
+
+  // Vessel: show the delivering vessel (retained across all stages now)
+  const vesselName = container.vessel_name || container.berthed_vessel || '—';
+  const atSea = ['GATE_IN','AT_SEA'].includes(container.lifecycle_stage);
+  const vesselLabel = vesselName !== '—'
+    ? (atSea ? vesselName : vesselName + ' (delivered)')
+    : (container.current_loc || '—');
 
   // Header
   document.getElementById('m-id').textContent = cid;
-  // Assigned vessel = the vessel used during GATE_IN/AT_SEA legs
-  // Once arrived and berthed, the vessel is released — show port instead
-  const allSnaps = H[cid] || [];
-  const seaSnap  = allSnaps.find(s => ['GATE_IN','AT_SEA'].includes(s.stage));
-  const assignedVesselName = seaSnap ? seaSnap.vessel : (container.vessel_name || '');
-  const currentlyAtSea = ['GATE_IN','AT_SEA'].includes(container.lifecycle_stage);
-  document.getElementById('m-vessel').textContent = assignedVesselName
-    ? (currentlyAtSea ? assignedVesselName : assignedVesselName + ' (berthed)')
-    : (container.current_loc || '—');
-  document.getElementById('m-status').innerHTML = `<span class="sts sts-${container.action_status==='Critical'?'c':container.action_status==='Warning'?'w':'s'}"><span class="sts-dot"></span>${container.action_status}</span>`;
+  document.getElementById('m-vessel').textContent = vesselLabel;
+  document.getElementById('m-status').innerHTML =
+    `<span class="sts sts-${container.action_status==='Critical'?'c':container.action_status==='Warning'?'w':'s'}"><span class="sts-dot"></span>${container.action_status}</span>`;
 
   // Meta strip
-  // Vessel is locked at birth — read from first history snapshot or current data
-  // vessel resolved below
   const meta = [
-    {l:'Route',           v: (container.origin_locode||'?') + ' → ' + (container.dest_locode||'?')},
-    {l:'Trade Lane',      v: LL[container.trade_lane]||container.trade_lane||'—'},
-    {l:'Lease Type',      v: container.lease_type||'—'},
-    {l: currentlyAtSea ? 'Vessel (underway)' : 'Last Vessel (berthed)',
-       v: assignedVesselName || '—'},
-    {l:'Current Stage',   v: SL[container.lifecycle_stage]||container.lifecycle_stage||'—'},
-    {l:'Buffer',          v: (Number(container.days_to_lfd||0)>=0?'+':'')+Number(container.days_to_lfd||0).toFixed(1)+' days'},
-    {l:'Per Diem',        v: '$'+(container.per_diem_rate||0)+'/day'},
-    {l:'Free Days',       v: (container.agreed_free_days||0)+' days'},
-    {l:'History Runs',    v: (H[cid]||[]).length+' snapshots'},
+    {l:'Route',        v: (container.origin_locode||'?') + ' → ' + (container.dest_locode||'?')},
+    {l:'Trade Lane',   v: LL[container.trade_lane]||container.trade_lane||'—'},
+    {l:'Lease Type',   v: container.lease_type||'—'},
+    {l:'Vessel',       v: vesselLabel},
+    {l:'Stage',        v: SL[container.lifecycle_stage]||container.lifecycle_stage||'—'},
+    {l:'Buffer',       v: (Number(container.days_to_lfd||0)>=0?'+':'')+Number(container.days_to_lfd||0).toFixed(1)+'d'},
+    {l:'Per Diem',     v: '\$'+(container.per_diem_rate||0)+'/day'},
+    {l:'Free Days',    v: (container.agreed_free_days||0)+' days'},
+    {l:'Snapshots',    v: allSnaps.length+' runs recorded'},
   ];
-  document.getElementById('modal-meta').innerHTML = meta.map(m=>`<div class="mm-item"><div class="mm-lbl">${m.l}</div><div class="mm-val">${m.v}</div></div>`).join('');
+  document.getElementById('modal-meta').innerHTML =
+    meta.map(m=>`<div class="mm-item"><div class="mm-lbl">${m.l}</div><div class="mm-val">${m.v}</div></div>`).join('');
 
-  // Range
-  const allSnaps = H[cid]||[];
-  if(allSnaps.length>0){
-    document.getElementById('m-range').textContent = allSnaps[0].ts.slice(0,16) + ' → ' + allSnaps[allSnaps.length-1].ts.slice(0,16);
-  } else {
-    document.getElementById('m-range').textContent = 'No history yet';
-  }
+  // Date range
+  document.getElementById('m-range').textContent = allSnaps.length > 0
+    ? allSnaps[0].ts.slice(0,16) + ' → ' + allSnaps[allSnaps.length-1].ts.slice(0,16)
+    : 'No history yet';
 
-  // Stage trail (show lifecycle transitions)
+  // Stage trail
   const transitions = [];
   let lastStage = null;
-  allSnaps.forEach(s=>{
-    if(s.stage !== lastStage){
-      transitions.push({stage:s.stage, ts:s.ts});
-      lastStage = s.stage;
-    }
-  });
+  allSnaps.forEach(s=>{ if(s.stage!==lastStage){ transitions.push({stage:s.stage,ts:s.ts}); lastStage=s.stage; } });
   const trailCols = {GATE_IN:'rgba(196,224,229,.7)',AT_SEA:'#0A9396',ARRIVED:'#64C8CC',IN_FREE_DAYS:'#D4A030',OVERDUE:'#E05252'};
   document.getElementById('stage-trail').innerHTML = transitions.length > 0
     ? transitions.map((t,i)=>`
         <div class="st-event">
-          <div class="stg-dot" style="background:${trailCols[t.stage]||'#666'};width:6px;height:6px;border-radius:50%;flex-shrink:0"></div>
+          <div style="width:6px;height:6px;border-radius:50%;background:${trailCols[t.stage]||'#666'};flex-shrink:0"></div>
           <div>
-            <div class="st-event-lbl" style="color:${trailCols[t.stage]||'rgba(232,244,246,.5)'}">${SL[t.stage]||t.stage}</div>
+            <div class="st-event-lbl" style="color:${trailCols[t.stage]||'rgba(232,244,246,.5)'}">
+              ${SL[t.stage]||t.stage}
+            </div>
             <div class="st-event-ts">${t.ts.slice(0,16)}</div>
           </div>
-          ${i<transitions.length-1?'<span style="color:rgba(232,244,246,.2);font-size:10px;margin-left:2px">→</span>':''}
+          ${i<transitions.length-1?'<span style="color:rgba(232,244,246,.2);font-size:10px">→</span>':''}
         </div>`).join('')
-    : '<div style="font-family:var(--mono);font-size:10px;color:rgba(232,244,246,.28)">No stage transitions recorded yet</div>';
+    : '<div style="font:10px var(--mono);color:rgba(232,244,246,.28)">No stage transitions recorded yet</div>';
 
-  // Buffer/burn chart
+  // Chart + table
   drawJourneyChart(allSnaps);
 
-  // Journey table rows
-  if(snaps.length===0){
-    document.getElementById('journey-rows').innerHTML = '<div class="jt-empty">No historical data yet. Runs accumulate each hour.</div>';
+  if(snaps.length === 0){
+    document.getElementById('journey-rows').innerHTML =
+      '<div class="jt-empty">No historical data yet. Runs accumulate each hour on GitHub Actions.</div>';
   } else {
     document.getElementById('journey-rows').innerHTML = snaps.map((s,i)=>{
-      const dtl=Number(s.dtl||0);
-      const dtlCol=dtl>2?'var(--teal)':dtl<=0?'var(--alert)':'var(--warn)';
-      const stsC=s.status==='Critical'?'c':s.status==='Warning'?'w':'s';
-      const isLatest = i===0;
-      return `<div class="jt-row${isLatest?' latest':''}">
+      const dtl = Number(s.dtl||0);
+      const dtlCol = dtl>2?'var(--teal)':dtl<=0?'var(--alert)':'var(--warn)';
+      const stsC = s.status==='Critical'?'c':s.status==='Warning'?'w':'s';
+      const locLabel = ['GATE_IN','AT_SEA'].includes(s.stage)
+        ? (s.vessel || s.loc || '—')
+        : (s.loc || '—');
+      return `<div class="jt-row${i===0?' latest':''}">
         <div class="jt-cell hi">${s.ts.slice(0,16)}</div>
         <div class="jt-cell"><span class="stg stg-${s.stage||'GATE_IN'}"><span class="stg-dot"></span>${SL[s.stage]||s.stage}</span></div>
         <div class="jt-cell" style="color:${dtlCol}">${dtl>=0?'+':''}${dtl.toFixed(1)}</div>
         <div class="jt-cell"><span class="sts sts-${stsC}"><span class="sts-dot"></span>${s.status}</span></div>
         <div class="jt-cell" style="color:${s.burn>0?'var(--alert)':'rgba(232,244,246,.4)'}">
-          ${s.burn>0?'$'+Math.round(s.burn).toLocaleString():'—'}
+          ${s.burn>0?'\$'+Math.round(s.burn).toLocaleString():'—'}
         </div>
         <div class="jt-cell">${s.pct}%</div>
         <div class="jt-cell" style="overflow:hidden;text-overflow:ellipsis;color:${['GATE_IN','AT_SEA'].includes(s.stage)?'var(--teal)':'rgba(232,244,246,.45)'}">
-          ${['GATE_IN','AT_SEA'].includes(s.stage)?(s.vessel||s.loc||'—'):(s.loc||'—')}
+          ${locLabel}
         </div>
       </div>`;
     }).join('');
@@ -667,6 +664,7 @@ function openJourney(cid, evt){
 
   document.getElementById('modal-overlay').classList.add('open');
 }
+
 
 function drawJourneyChart(snaps){
   const canvas = document.getElementById('jc-canvas');
