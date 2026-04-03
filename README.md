@@ -6,7 +6,7 @@
 
 [![Fork this repo](https://img.shields.io/badge/🍴_Fork-Start_in_30s-071E2E?style=for-the-badge)](../../fork)
 [![Live Dashboard](https://img.shields.io/badge/🌊_Live_Dashboard-GitHub_Pages-0A9396?style=for-the-badge)](https://rahulmistry18.github.io/Reposea_container_optimizer/)
-[![Pipeline](https://github.com/rahulmistry18/-Reposea_container_optimizer/actions/workflows/pipeline.yml/badge.svg)](../../actions)
+[![Pipeline](https://github.com/rahulmistry18/Reposea_container_optimizer/actions/workflows/pipeline.yml/badge.svg)](../../actions)
 
 ```
 AIS Feed + EDI 322 + ERP  ──▶  🥉 Bronze  (stateful fleet tick)
