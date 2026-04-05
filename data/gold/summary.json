@@ -1,36 +1,36 @@
 {
-  "generated_at": "2026-04-05T04:30:18.069365+00:00",
+  "generated_at": "2026-04-05T06:09:45.451650+00:00",
   "run_count": 9,
   "total_containers": 35,
   "critical_count": 12,
   "warning_count": 2,
   "safe_count": 21,
-  "total_penalty_usd": 6754.47,
-  "avg_buffer_days": 7.7,
+  "total_penalty_usd": 6825.37,
+  "avg_buffer_days": 7.6,
   "by_trade_lane": [
     {
       "trade_lane": "ASIA_EUR",
       "count": 10,
       "critical": 1,
-      "total_burn": 848.99
+      "total_burn": 855.55
     },
     {
       "trade_lane": "INTRA_ASIA",
       "count": 7,
       "critical": 2,
-      "total_burn": 1042.86
+      "total_burn": 1055.3600000000001
     },
     {
       "trade_lane": "TRANS_ATL",
       "count": 5,
       "critical": 2,
-      "total_burn": 1007.84
+      "total_burn": 1025.72
     },
     {
       "trade_lane": "TRANS_PAC",
       "count": 13,
       "critical": 7,
-      "total_burn": 3854.78
+      "total_burn": 3888.7400000000002
     }
   ],
   "by_lease_type": [
@@ -55,40 +55,40 @@
       "container_id": "HLXU6378692",
       "lease_type": "Master Lease",
       "trade_lane_label": "Trans-Pacific",
-      "days_to_lfd": -11.52,
-      "burn_rate_usd": 1017.59,
+      "days_to_lfd": -11.59,
+      "burn_rate_usd": 1024.36,
       "action_status": "Critical"
     },
     {
       "container_id": "EITU3189964",
       "lease_type": "Master Lease",
       "trade_lane_label": "Trans-Pacific",
-      "days_to_lfd": -13.52,
-      "burn_rate_usd": 896.94,
+      "days_to_lfd": -13.59,
+      "burn_rate_usd": 901.84,
       "action_status": "Critical"
     },
     {
       "container_id": "CLHU9880624",
       "lease_type": "Long-Term",
       "trade_lane_label": "Trans-Pacific",
-      "days_to_lfd": -16.52,
-      "burn_rate_usd": 757.08,
+      "days_to_lfd": -16.59,
+      "burn_rate_usd": 760.47,
       "action_status": "Critical"
     },
     {
       "container_id": "MSKU1014608",
       "lease_type": "Long-Term",
       "trade_lane_label": "Intra-Asia",
-      "days_to_lfd": -12.52,
-      "burn_rate_usd": 498.08,
+      "days_to_lfd": -12.59,
+      "burn_rate_usd": 500.91,
       "action_status": "Critical"
     },
     {
       "container_id": "MAEU3543646",
       "lease_type": "Master Lease",
       "trade_lane_label": "Asia-Europe",
-      "days_to_lfd": -9.52,
-      "burn_rate_usd": 848.99,
+      "days_to_lfd": -9.59,
+      "burn_rate_usd": 855.55,
       "action_status": "Critical"
     }
   ]
