@@ -1,11 +1,11 @@
 {
-  "run_ts": "2026-04-10T17:41:09.366748+00:00",
+  "run_ts": "2026-04-10T18:40:05.136792+00:00",
   "env": "prod",
-  "elapsed_sec": 1.71,
+  "elapsed_sec": 2.72,
   "total_rows": 35,
-  "critical": 18,
+  "critical": 17,
   "warning": 0,
-  "safe": 17,
+  "safe": 18,
   "bronze_files": [
     "ais_feed.json",
     "container_events.json",
