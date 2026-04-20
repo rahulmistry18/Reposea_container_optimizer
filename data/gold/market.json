@@ -1,12 +1,12 @@
 {
-  "fetched_at": "2026-04-19T23:28:04.744552+00:00",
+  "fetched_at": "2026-04-20T01:51:04.769729+00:00",
   "source": "synthetic_drift+live_fx",
   "sentiment": "normal",
   "lane_multipliers": {
-    "TRANS_PAC": 1.178,
-    "TRANS_ATL": 1.159,
-    "ASIA_EUR": 1.03,
-    "INTRA_ASIA": 0.926
+    "TRANS_PAC": 1.109,
+    "TRANS_ATL": 1.116,
+    "ASIA_EUR": 1.116,
+    "INTRA_ASIA": 1.173
   },
   "fbx_rates": {},
   "fx_rates": {
@@ -28,10 +28,10 @@
     }
   ],
   "top_congestion": {
-    "USSEA": 0.401,
-    "HKHKG": 0.394,
-    "DEHAM": 0.389,
-    "JPYOK": 0.358,
-    "USNYC": 0.355
+    "KRPUS": 0.771,
+    "GBFXT": 0.77,
+    "CNSHA": 0.744,
+    "TWKHH": 0.733,
+    "BEANR": 0.729
   }
 }
