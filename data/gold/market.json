@@ -1,12 +1,12 @@
 {
-  "fetched_at": "2026-05-03T23:35:46.332101+00:00",
+  "fetched_at": "2026-05-04T01:59:24.363408+00:00",
   "source": "synthetic_drift+live_fx",
   "sentiment": "normal",
   "lane_multipliers": {
-    "TRANS_PAC": 0.842,
-    "TRANS_ATL": 1.219,
-    "ASIA_EUR": 1.236,
-    "INTRA_ASIA": 0.913
+    "TRANS_PAC": 1.024,
+    "TRANS_ATL": 1.011,
+    "ASIA_EUR": 0.937,
+    "INTRA_ASIA": 0.916
   },
   "fbx_rates": {},
   "fx_rates": {
@@ -28,10 +28,10 @@
     }
   ],
   "top_congestion": {
-    "TWKHH": 0.413,
-    "DEHAM": 0.405,
-    "USNYC": 0.4,
-    "CNYTN": 0.389,
-    "USLAX": 0.386
+    "DEHAM": 0.834,
+    "USLONG": 0.826,
+    "SGSIN": 0.815,
+    "USSEA": 0.763,
+    "HKHKG": 0.718
   }
 }
