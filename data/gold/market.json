@@ -1,22 +1,22 @@
 {
-  "fetched_at": "2026-05-09T16:42:29.667532+00:00",
+  "fetched_at": "2026-06-08T16:42:59.607341+00:00",
   "source": "synthetic_drift+live_fx",
   "sentiment": "normal",
   "lane_multipliers": {
-    "TRANS_PAC": 1.024,
-    "TRANS_ATL": 1.011,
-    "ASIA_EUR": 0.937,
+    "TRANS_PAC": 0.979,
+    "TRANS_ATL": 1.091,
+    "ASIA_EUR": 0.9,
     "INTRA_ASIA": 0.916
   },
   "fbx_rates": {},
   "fx_rates": {
-    "CNY": 6.8012,
-    "EUR": 0.85027,
-    "GBP": 0.73472,
-    "HKD": 7.8282,
-    "JPY": 156.76,
-    "KRW": 1466.78,
-    "SGD": 1.2678
+    "CNY": 6.7819,
+    "EUR": 0.86655,
+    "GBP": 0.74835,
+    "HKD": 7.836,
+    "JPY": 159.97,
+    "KRW": 1527.95,
+    "SGD": 1.2873
   },
   "disruptions": [
     {
@@ -25,13 +25,20 @@
         "ASIA_EUR"
       ],
       "factor": 1.15
+    },
+    {
+      "name": "Us West Coast Labour",
+      "lanes": [
+        "TRANS_PAC"
+      ],
+      "factor": 1.25
     }
   ],
   "top_congestion": {
-    "DEHAM": 0.516,
-    "NLRTM": 0.5,
-    "USLONG": 0.493,
-    "SGSIN": 0.469,
-    "CNQIN": 0.447
+    "KRPUS": 0.795,
+    "HKHKG": 0.759,
+    "USLONG": 0.737,
+    "USNYC": 0.704,
+    "SGSIN": 0.703
   }
 }
