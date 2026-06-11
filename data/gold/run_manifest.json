@@ -1,7 +1,7 @@
 {
-  "run_ts": "2026-06-11T14:30:43.938796+00:00",
+  "run_ts": "2026-06-11T18:06:16.824139+00:00",
   "env": "prod",
-  "elapsed_sec": 2.05,
+  "elapsed_sec": 3.11,
   "total_rows": 35,
   "critical": 33,
   "warning": 0,
