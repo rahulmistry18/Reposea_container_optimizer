@@ -1,5 +1,5 @@
 {
-  "fetched_at": "2026-06-13T23:59:10.374912+00:00",
+  "fetched_at": "2026-06-14T04:10:52.423359+00:00",
   "source": "synthetic_drift+live_fx",
   "sentiment": "normal",
   "lane_multipliers": {
@@ -35,10 +35,10 @@
     }
   ],
   "top_congestion": {
-    "CNQIN": 0.522,
-    "SGSIN": 0.507,
-    "USLAX": 0.473,
-    "CNSHA": 0.455,
-    "TWKHH": 0.451
+    "CNSHA": 0.404,
+    "USNYC": 0.399,
+    "GBFXT": 0.397,
+    "SGSIN": 0.38,
+    "HKHKG": 0.367
   }
 }
