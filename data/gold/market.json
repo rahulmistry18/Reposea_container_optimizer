@@ -1,12 +1,12 @@
 {
-  "fetched_at": "2026-06-21T23:00:54.683623+00:00",
+  "fetched_at": "2026-06-22T02:49:47.968903+00:00",
   "source": "synthetic_drift+live_fx",
   "sentiment": "normal",
   "lane_multipliers": {
-    "TRANS_PAC": 0.818,
-    "TRANS_ATL": 1.122,
-    "ASIA_EUR": 0.881,
-    "INTRA_ASIA": 0.932
+    "TRANS_PAC": 0.942,
+    "TRANS_ATL": 0.918,
+    "ASIA_EUR": 1.165,
+    "INTRA_ASIA": 1.158
   },
   "fbx_rates": {},
   "fx_rates": {
@@ -35,10 +35,10 @@
     }
   ],
   "top_congestion": {
-    "KRPUS": 0.408,
-    "NLRTM": 0.386,
-    "USLAX": 0.382,
-    "TWKHH": 0.323,
-    "HKHKG": 0.316
+    "GBFXT": 0.82,
+    "HKHKG": 0.729,
+    "USLONG": 0.685,
+    "JPYOK": 0.624,
+    "BEANR": 0.595
   }
 }
