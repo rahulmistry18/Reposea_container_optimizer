@@ -1,5 +1,5 @@
 {
-  "fetched_at": "2026-06-30T23:58:34.530267+00:00",
+  "fetched_at": "2026-07-01T03:51:10.971452+00:00",
   "source": "synthetic_drift+live_fx",
   "sentiment": "normal",
   "lane_multipliers": {
@@ -20,6 +20,14 @@
   },
   "disruptions": [
     {
+      "name": "Typhoon Season",
+      "lanes": [
+        "TRANS_PAC",
+        "INTRA_ASIA"
+      ],
+      "factor": 1.3
+    },
+    {
       "name": "Suez Congestion",
       "lanes": [
         "ASIA_EUR"
@@ -35,10 +43,10 @@
     }
   ],
   "top_congestion": {
-    "CNQIN": 0.673,
-    "USLAX": 0.666,
-    "USLONG": 0.624,
-    "BEANR": 0.51,
-    "SGSIN": 0.493
+    "CNQIN": 0.719,
+    "HKHKG": 0.686,
+    "NLRTM": 0.647,
+    "BEANR": 0.644,
+    "KRPUS": 0.643
   }
 }
