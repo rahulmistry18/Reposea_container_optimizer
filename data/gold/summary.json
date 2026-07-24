@@ -1,94 +1,94 @@
 {
-  "generated_at": "2026-07-24T14:45:12.146252+00:00",
+  "generated_at": "2026-07-24T18:11:26.246875+00:00",
   "run_count": 9,
   "total_containers": 35,
   "critical_count": 33,
   "warning_count": 0,
   "safe_count": 2,
-  "total_penalty_usd": 405864.37,
-  "avg_buffer_days": -95.3,
+  "total_penalty_usd": 393629.0,
+  "avg_buffer_days": -93.8,
   "by_trade_lane": [
     {
       "trade_lane": "ASIA_EUR",
-      "count": 10,
-      "critical": 10,
-      "total_burn": 142576.93999999997
+      "count": 11,
+      "critical": 11,
+      "total_burn": 143242.94
     },
     {
       "trade_lane": "INTRA_ASIA",
-      "count": 7,
-      "critical": 7,
-      "total_burn": 84362.48
+      "count": 5,
+      "critical": 5,
+      "total_burn": 62376.66
     },
     {
       "trade_lane": "TRANS_ATL",
-      "count": 5,
-      "critical": 4,
-      "total_burn": 46298.9
+      "count": 6,
+      "critical": 5,
+      "total_burn": 66273.20999999999
     },
     {
       "trade_lane": "TRANS_PAC",
       "count": 13,
       "critical": 12,
-      "total_burn": 132626.05
+      "total_burn": 121736.19
     }
   ],
   "by_lease_type": [
     {
       "lease_type": "Long-Term",
-      "count": 11,
-      "critical": 10
+      "count": 9,
+      "critical": 9
     },
     {
       "lease_type": "Master Lease",
-      "count": 8,
-      "critical": 8
+      "count": 10,
+      "critical": 10
     },
     {
       "lease_type": "One-Way",
       "count": 16,
-      "critical": 15
+      "critical": 14
     }
   ],
   "top_priority": [
     {
-      "container_id": "APZU2035508",
-      "lease_type": "Long-Term",
-      "trade_lane_label": "Intra-Asia",
-      "days_to_lfd": -80.95,
-      "burn_rate_usd": 6173.19,
-      "action_status": "Critical"
-    },
-    {
       "container_id": "APZU2345317",
       "lease_type": "One-Way",
       "trade_lane_label": "Asia-Europe",
-      "days_to_lfd": -89.95,
-      "burn_rate_usd": 18976.83,
+      "days_to_lfd": -90.09,
+      "burn_rate_usd": 19000.61,
       "action_status": "Critical"
     },
     {
       "container_id": "BMOU7940572",
       "lease_type": "One-Way",
       "trade_lane_label": "Asia-Europe",
-      "days_to_lfd": -92.95,
-      "burn_rate_usd": 18519.56,
-      "action_status": "Critical"
-    },
-    {
-      "container_id": "KKTU7440039",
-      "lease_type": "Master Lease",
-      "trade_lane_label": "Trans-Pacific",
-      "days_to_lfd": -111.95,
-      "burn_rate_usd": 8230.92,
+      "days_to_lfd": -93.09,
+      "burn_rate_usd": 18542.76,
       "action_status": "Critical"
     },
     {
       "container_id": "CLHU9880624",
       "lease_type": "Long-Term",
       "trade_lane_label": "Trans-Pacific",
-      "days_to_lfd": -126.95,
-      "burn_rate_usd": 6168.01,
+      "days_to_lfd": -127.09,
+      "burn_rate_usd": 6175.02,
+      "action_status": "Critical"
+    },
+    {
+      "container_id": "KKTU7440039",
+      "lease_type": "Master Lease",
+      "trade_lane_label": "Trans-Pacific",
+      "days_to_lfd": -112.09,
+      "burn_rate_usd": 8241.23,
+      "action_status": "Critical"
+    },
+    {
+      "container_id": "CMAU3146415",
+      "lease_type": "Long-Term",
+      "trade_lane_label": "Asia-Europe",
+      "days_to_lfd": -90.09,
+      "burn_rate_usd": 4235.08,
       "action_status": "Critical"
     }
   ]
